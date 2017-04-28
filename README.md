@@ -10,30 +10,30 @@ options to to block configuration by creating a custom plugin.
 
 ##USAGE
 
-### Setting up an image style in a module
+### Setting up a block style in a module
 
 A sample Block Style plugin can be found in 
 `block_style_plugins/src/Plugin/BlockStyle/SampleBlockStyle.php`
 
 Create a new plugin class extending the BlockStyleBase class.
 
-Override the `BlockStyleBase::formAlter` method to extend the `$form` array with
+Override the `BlockStyleBase::formElements` method to extend the `$form` array with
 your own custom style options using the 
 [Form API](https://api.drupal.org/api/drupal/elements).
 
-A `styles` fieldset is automatically provided that can be used to do some
+A `block_styles` fieldset is automatically provided that can be used to do some
 automatic loading of values as classes onto the block attributes.
 
 ```
-$form['styles']['sample_class'] = array(
+$form['sample_class'] = array(
   '#type' => 'textfield',
   '#title' => $this->t('Add a custom class to this block'),
   '#description' => $this->t('Do not add the "period" to the start of the class'),
-  '#default_value' => $this->configuration['styles']['sample_class'],
+  '#default_value' => $this->styles['sample_class'],
 );
 ```
 
-### Adding to a theme
+### Adding a block style to a theme
 
 Standard class Annotations are not discoverable in a theme. Thus the need to use
 a `themename.blockstyle.yml` file
