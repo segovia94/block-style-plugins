@@ -53,7 +53,7 @@ Then add a BlockStyle plugin class into
 `themename\Plugin\BlockStyle\SampleBlockStyle.php` which will extend the 
 BlockStyleBase class
 
-### Visibility rules for showing or style options per block
+### Visibility rules for showing style options per block
 
 "include" and "exclude" attributes are available to only include certain blocks 
 or to exclude certain blocks from accessing your custom block styles. 
