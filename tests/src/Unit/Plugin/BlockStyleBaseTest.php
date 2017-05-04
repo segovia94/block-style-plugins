@@ -6,7 +6,9 @@ use Drupal\Tests\UnitTestCase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityRepository;
 use Drupal\Component\Plugin\PluginInspectionInterface;
+use Drupal\Component\Plugin\DerivativeInspectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyleBase
@@ -14,6 +16,11 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class BlockStyleBaseTest extends UnitTestCase
 {
+
+  /**
+   * @var \Drupal\Core\Entity\EntityRepository
+   */
+  protected $entityRepository;
 
   /**
    * @var \Drupal\Core\Form\FormStateInterface
@@ -33,7 +40,7 @@ class BlockStyleBaseTest extends UnitTestCase
     parent::setUp();
 
     // stub the Iconset Finder Service
-    $entityRepository = $this->prophesize(EntityRepository::CLASS);
+    $this->entityRepository = $this->prophesize(EntityRepository::CLASS);
 
     // Form state double
     $this->formState = $this->prophesize(FormStateInterface::CLASS);
@@ -46,7 +53,7 @@ class BlockStyleBaseTest extends UnitTestCase
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $entityRepository->reveal()
+      $this->entityRepository->reveal()
     );
 
     // Create a translation stub for the t() method
@@ -64,11 +71,8 @@ class BlockStyleBaseTest extends UnitTestCase
     $plugin_id = 'block_style_plugins';
     $plugin_definition['provider'] = 'block_style_plugins';
 
-    // stub the Iconset Finder Service
-    $entityRepository = $this->prophesize(EntityRepository::CLASS);
-
     $container = $this->prophesize(ContainerInterface::CLASS);
-    $container->get('entity.repository')->willReturn($entityRepository->reveal());
+    $container->get('entity.repository')->willReturn($this->entityRepository->reveal());
 
     $instance = MockBlockStyleBase::create(
       $container->reveal(),
@@ -253,6 +257,30 @@ class BlockStyleBaseTest extends UnitTestCase
     $this->plugin->blockContentBundle = 'custom_block';
     $return = $this->plugin->includeOnly();
     $this->assertFalse($return);
+  }
+
+  /**
+   * Tests the setBlockContentBundle method.
+   *
+   * @see ::setBlockContentBundle()
+   */
+  public function testSetBlockContentBundle() {
+    // stub the blockPlugin
+    $blockPlugin = $this->prophesize(DerivativeInspectionInterface::CLASS);
+    $blockPlugin->getBaseId()->willReturn('block_content');
+    $blockPlugin->getDerivativeId()->willReturn('uuid-1234');
+    $this->plugin->blockPlugin = $blockPlugin->reveal();
+
+    $entity = $this->prophesize(EntityInterface::CLASS);
+    $entity->bundle()->willReturn('basic_custom_block');
+
+    $this->entityRepository->loadEntityByUuid('block_content', 'uuid-1234')
+      ->willReturn($entity->reveal());
+
+    $this->plugin->setBlockContentBundle();
+    $bundle = $this->plugin->blockContentBundle;
+
+    $this->assertEquals('basic_custom_block', $bundle);
   }
 
 }
