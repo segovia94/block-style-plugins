@@ -8,7 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityRepository;
 
 /**
- * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyle
+ * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyle\SampleBlockStyle
  * @group block_style_plugins
  */
 class SampleBlockStyleTest extends UnitTestCase

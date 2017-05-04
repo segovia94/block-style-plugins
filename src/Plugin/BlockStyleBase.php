@@ -188,6 +188,8 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
 
   /**
    * {@inheritdoc}
+   *
+   * @codeCoverageIgnore
    */
   public function defaultStyles() {
     return array();
@@ -214,7 +216,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function exclude() {
-    $list = array();
+    $list = [];
 
     if (isset($this->pluginDefinition['exclude'])) {
       $list = $this->pluginDefinition['exclude'];
