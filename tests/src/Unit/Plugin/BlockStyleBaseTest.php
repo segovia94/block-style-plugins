@@ -6,6 +6,7 @@ use Drupal\Tests\UnitTestCase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityRepository;
 use Drupal\Component\Plugin\PluginInspectionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyleBase
@@ -51,6 +52,31 @@ class BlockStyleBaseTest extends UnitTestCase
     // Create a translation stub for the t() method
     $translator = $this->getStringTranslationStub();
     $this->plugin->setStringTranslation($translator);
+  }
+
+  /**
+   * Tests the create method.
+   *
+   * @see ::create()
+   */
+  public function testCreate() {
+    $configuration = [];
+    $plugin_id = 'block_style_plugins';
+    $plugin_definition['provider'] = 'block_style_plugins';
+
+    // stub the Iconset Finder Service
+    $entityRepository = $this->prophesize(EntityRepository::CLASS);
+
+    $container = $this->prophesize(ContainerInterface::CLASS);
+    $container->get('entity.repository')->willReturn($entityRepository->reveal());
+
+    $instance = MockBlockStyleBase::create(
+      $container->reveal(),
+      $configuration,
+      $plugin_id,
+      $plugin_definition
+    );
+    $this->assertInstanceOf('Drupal\block_style_plugins\Plugin\BlockStyleInterface', $instance);
   }
 
   /**
@@ -172,11 +198,61 @@ class BlockStyleBaseTest extends UnitTestCase
     $return = $this->plugin->exclude();
     $this->assertTrue($return);
 
+    // Exclude a block that is not the current one
+    $this->plugin->pluginDefinition['exclude'] = ['wrong_block'];
+    $return = $this->plugin->exclude();
+    $this->assertFalse($return);
+
     // Exclude a custom content block
     $this->plugin->pluginDefinition['exclude'] = ['custom_block'];
     $this->plugin->blockContentBundle = 'custom_block';
     $return = $this->plugin->exclude();
     $this->assertTrue($return);
+
+    // Exclude a custom content block that is not the current block
+    $this->plugin->pluginDefinition['exclude'] = ['wrong_custom_block'];
+    $this->plugin->blockContentBundle = 'custom_block';
+    $return = $this->plugin->exclude();
+    $this->assertFalse($return);
+  }
+
+  /**
+   * Tests the includeOnly method.
+   *
+   * @see ::includeOnly()
+   * @TODO Create a provider so that more combinations can be tested.
+   */
+  public function testIncludeOnly() {
+    // stub the blockPlugin
+    $blockPlugin = $this->prophesize(PluginInspectionInterface::CLASS);
+    $blockPlugin->getPluginId()->willReturn('basic_block');
+    $this->plugin->blockPlugin = $blockPlugin->reveal();
+
+    // No include options are passed
+    $return = $this->plugin->includeOnly();
+    $this->assertTrue($return);
+
+    // Include basic_block
+    $this->plugin->pluginDefinition['include'] = ['basic_block'];
+    $return = $this->plugin->includeOnly();
+    $this->assertTrue($return);
+
+    // Include only a sample_block
+    $this->plugin->pluginDefinition['include'] = ['wrong_block'];
+    $return = $this->plugin->includeOnly();
+    $this->assertFalse($return);
+
+    // Include a custom content block
+    $this->plugin->pluginDefinition['include'] = ['custom_block'];
+    $this->plugin->blockContentBundle = 'custom_block';
+    $return = $this->plugin->includeOnly();
+    $this->assertTrue($return);
+
+    // Include a custom content block which is not the current one
+    $this->plugin->pluginDefinition['include'] = ['wrong_custom_block'];
+    $this->plugin->blockContentBundle = 'custom_block';
+    $return = $this->plugin->includeOnly();
+    $this->assertFalse($return);
   }
 
 }
