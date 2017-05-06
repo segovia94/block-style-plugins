@@ -29,13 +29,13 @@ class SampleBlockStyle extends BlockStyleBase {
    * {@inheritdoc}
    */
   public function formElements($form, FormStateInterface $form_state) {
-    // Title Style
-    $elements['sample_class'] = array(
+    // Title Style.
+    $elements['sample_class'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Add a custom class to this block'),
       '#description' => $this->t('Do not add the "period" to the start of the class'),
       '#default_value' => $this->styles['sample_class'],
-    );
+    ];
 
     return $elements;
   }

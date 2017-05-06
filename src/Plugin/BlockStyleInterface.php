@@ -21,7 +21,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @return array $form
+   * @return array
    *   The renderable form array representing the entire configuration form.
    */
   public function prepareForm($form, FormStateInterface $form_state);
@@ -35,7 +35,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @return array $elements
+   * @return array
    *   A list of all form field elements that will allow setting styles.
    */
   public function formElements($form, FormStateInterface $form_state);
@@ -48,7 +48,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    *
-   * @return array $form
+   * @return array
    *   The renderable form array representing the entire configuration form.
    */
   public function formAlter($form, FormStateInterface $form_state);
@@ -77,7 +77,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * Determine if configuration should be excluded from certain blocks when a
    * block plugin id or block content type is passed from a plugin.
    *
-   * @return boolean
+   * @return bool
    */
   public function exclude();
 
@@ -85,12 +85,12 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * Determine if configuration should be only included on certain blocks when a
    * block plugin id or block content type is passed from a plugin.
    *
-   * @return boolean
+   * @return bool
    */
   public function includeOnly();
 
   /**
-   * Create a list of style configuration defaults
+   * Create a list of style configuration defaults.
    *
    * @return array
    */
@@ -104,9 +104,10 @@ interface BlockStyleInterface extends PluginInspectionInterface {
   public function setStyles(array $styles);
 
   /**
-   * Retrieve a list of style configuration
+   * Retrieve a list of style configuration.
    *
    * @return array
    */
   public function getStyles();
+
 }
