@@ -5,11 +5,10 @@ namespace Drupal\block_style_plugins\Plugin;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\Entity;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
-use Drupal\Core\Entity\EntityRepository;
-use Drupal\block\Entity\Block;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Base class for Block style plugins.
@@ -40,9 +39,16 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   /**
    * Instance of the Entity Repository service.
    *
-   * @var string
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
    */
   protected $entityRepository;
+
+  /**
+   * Instance of the Entity Type Manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
 
   /**
    * Style settings for the block styles.
@@ -58,13 +64,16 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Entity\EntityRepository $entityRepository
-   *   The Entity Repository object.
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entityRepository
+   *   An Entity Repository instance.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
+   *   An Entity Type Manager instance.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityRepository $entityRepository) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityRepositoryInterface $entityRepository, EntityTypeManagerInterface $entityTypeManager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    // Store our dependency.
+    // Store our dependencies.
     $this->entityRepository = $entityRepository;
+    $this->entityTypeManager = $entityTypeManager;
     // Store the plugin ID.
     $this->pluginId = $plugin_id;
   }
@@ -77,7 +86,8 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.repository')
+      $container->get('entity.repository'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -165,7 +175,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
     }
 
     // Load the block config entity.
-    $block = Block::load($variables['elements']['#id']);
+    $block = $this->entityTypeManager->getStorage('block')->load($variables['elements']['#id']);
     $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
 
     if ($styles) {

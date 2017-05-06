@@ -5,7 +5,8 @@ namespace Drupal\Tests\block_style_plugins\Unit\Plugin\BlockStyle;
 use Drupal\Tests\UnitTestCase;
 use Drupal\block_style_plugins\Plugin\BlockStyle\SampleBlockStyle;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\EntityRepository;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyle\SampleBlockStyle
@@ -26,8 +27,11 @@ class SampleBlockStyleTest extends UnitTestCase
   {
     parent::setUp();
 
-    // stub the Iconset Finder Service
-    $entityRepository = $this->prophesize(EntityRepository::CLASS);
+    // Stub the Iconset Finder Service
+    $entityRepository = $this->prophesize(EntityRepositoryInterface::CLASS);
+
+    // Stub the Entity Type Manager
+    $entityTypeManager = $this->prophesize(EntityTypeManagerInterface::CLASS);
 
     $configuration = [];
     $plugin_id = 'block_style_plugins';
@@ -37,7 +41,8 @@ class SampleBlockStyleTest extends UnitTestCase
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $entityRepository->reveal()
+      $entityRepository->reveal(),
+      $entityTypeManager->reveal()
     );
 
     // Create a translation stub for the t() method

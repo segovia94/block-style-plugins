@@ -4,7 +4,8 @@ namespace Drupal\Tests\block_style_plugins\Unit\Plugin;
 
 use Drupal\Tests\UnitTestCase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\EntityRepository;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -23,6 +24,11 @@ class BlockStyleBaseTest extends UnitTestCase
   protected $entityRepository;
 
   /**
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * @var \Drupal\Core\Form\FormStateInterface
    */
   protected $formState;
@@ -39,8 +45,11 @@ class BlockStyleBaseTest extends UnitTestCase
   {
     parent::setUp();
 
-    // stub the Iconset Finder Service
-    $this->entityRepository = $this->prophesize(EntityRepository::CLASS);
+    // Stub the Iconset Finder Service
+    $this->entityRepository = $this->prophesize(EntityRepositoryInterface::CLASS);
+
+    // Stub the Entity Type Manager
+    $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::CLASS);
 
     // Form state double
     $this->formState = $this->prophesize(FormStateInterface::CLASS);
@@ -53,7 +62,8 @@ class BlockStyleBaseTest extends UnitTestCase
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $this->entityRepository->reveal()
+      $this->entityRepository->reveal(),
+      $this->entityTypeManager->reveal()
     );
 
     // Create a translation stub for the t() method
@@ -73,6 +83,7 @@ class BlockStyleBaseTest extends UnitTestCase
 
     $container = $this->prophesize(ContainerInterface::CLASS);
     $container->get('entity.repository')->willReturn($this->entityRepository->reveal());
+    $container->get('entity_type.manager')->willReturn($this->entityTypeManager->reveal());
 
     $instance = MockBlockStyleBase::create(
       $container->reveal(),
