@@ -25,7 +25,7 @@ function block_style_plugins_help($route_name, RouteMatchInterface $route_match)
 }
 
 /**
- * Implements hook_form_FORM_ID_alter()
+ * Implements hook_form_FORM_ID_alter().
  *
  * For the ID form_block.
  */
@@ -57,7 +57,7 @@ function block_style_plugins_preprocess_block(&$variables) {
  * Implements hook_themes_uninstalled().
  */
 function block_style_plugins_themes_uninstalled(array $themes) {
-  // Clear the Plugins cache when a theme using a plugin is uninstalled
+  // Clear the Plugins cache when a theme using a plugin is uninstalled.
   $plugin_manager = \Drupal::service('plugin.manager.block_style.processor');
   $style_plugins = $plugin_manager->getDefinitions();
   $clear_cache = FALSE;

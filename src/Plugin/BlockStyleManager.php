@@ -36,7 +36,7 @@ class BlockStyleManager extends DefaultPluginManager {
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, ThemeHandlerInterface $theme_handler) {
     parent::__construct('Plugin/BlockStyle', $namespaces, $module_handler, 'Drupal\block_style_plugins\Plugin\BlockStyleInterface', 'Drupal\block_style_plugins\Annotation\BlockStyle');
 
-    // Add in the Theme directory Discovery via Yaml file
+    // Add in the Theme directory Discovery via Yaml file.
     $discovery = $this->getDiscovery();
     $this->discovery = new YamlDiscoveryDecorator($discovery, 'blockstyle', $module_handler->getModuleDirectories() + $theme_handler->getThemeDirectories());
     $this->themeHandler = $theme_handler;

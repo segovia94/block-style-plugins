@@ -14,7 +14,7 @@ use Drupal\block\Entity\Block;
 /**
  * Base class for Block style plugins.
  */
-abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface, ContainerFactoryPluginInterface  {
+abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface, ContainerFactoryPluginInterface {
 
   /**
    * Plugin ID for the Block being configured.
@@ -65,7 +65,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     // Store our dependency.
     $this->entityRepository = $entityRepository;
-    // Store the plugin ID
+    // Store the plugin ID.
     $this->pluginId = $plugin_id;
   }
 
@@ -85,26 +85,26 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function prepareForm($form, FormStateInterface $form_state) {
-    // Get the current block config entity
+    // Get the current block config entity.
     $entity = $form_state->getFormObject()->getEntity();
 
-    // Set properties and configuration
+    // Set properties and configuration.
     $this->blockPlugin = $entity->getPlugin();
     $this->setBlockContentBundle();
 
     // Check to see if this should only apply to includes or if it has been
-    // excluded
+    // excluded.
     if ($this->includeOnly() && !$this->exclude()) {
 
-      // Create a fieldset to contain style fields
+      // Create a fieldset to contain style fields.
       if (!isset($form['block_styles'])) {
-        $form['block_styles'] = array(
+        $form['block_styles'] = [
           '#type' => 'fieldset',
           '#title' => $this->t('Block Styles'),
           '#collapsible' => FALSE,
           '#collapsed' => FALSE,
           '#weight' => 0,
-        );
+        ];
       }
 
       $styles = $entity->getThirdPartySetting('block_style_plugins', $this->pluginId);
@@ -112,22 +112,22 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
       $this->setStyles($styles);
 
       // Create containers to place each plugin style settings into the styles
-      // fieldset
+      // fieldset.
       $form['third_party_settings']['block_style_plugins'][$this->pluginId] = [
         '#type' => 'container',
         '#group' => 'block_styles',
       ];
 
-      // Allow plugins to add field elements to this form
+      // Allow plugins to add field elements to this form.
       $elements = $this->formElements($form, $form_state);
       if ($elements) {
         $form['third_party_settings']['block_style_plugins'][$this->pluginId] += $elements;
       }
 
-      // Allow plugins to alter this form
+      // Allow plugins to alter this form.
       $form = $this->formAlter($form, $form_state);
 
-      // Add the submitForm method to the form
+      // Add the submitForm method to the form.
       array_unshift($form['actions']['submit']['#submit'], [$this, 'submitForm']);
     }
 
@@ -152,29 +152,29 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function submitForm($form, FormStateInterface $form_state) {
-    return;
+    return NULL;
   }
 
   /**
    * {@inheritdoc}
    */
   public function build(array $variables) {
-    // Ensure that we have a block id
+    // Ensure that we have a block id.
     if (empty($variables['elements']['#id'])) {
       return $variables;
     }
 
-    // Load the block config entity
+    // Load the block config entity.
     $block = Block::load($variables['elements']['#id']);
     $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
 
     if ($styles) {
-      // Add all styles config to the $variables array
+      // Add all styles config to the $variables array.
       $variables['block_styles'][$this->pluginId] = $styles;
 
-      // Add each style value as a class
+      // Add each style value as a class.
       foreach ($styles as $class) {
-        // Don't put a boolean from a checkbox as a class
+        // Don't put a boolean from a checkbox as a class.
         if (is_int($class)) {
           continue;
         }
@@ -190,7 +190,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function defaultStyles() {
-    return array();
+    return [];
   }
 
   /**
@@ -214,7 +214,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function exclude() {
-    $list = array();
+    $list = [];
 
     if (isset($this->pluginDefinition['exclude'])) {
       $list = $this->pluginDefinition['exclude'];
@@ -232,7 +232,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function includeOnly() {
-    $list = array();
+    $list = [];
 
     if (isset($this->pluginDefinition['include'])) {
       $list = $this->pluginDefinition['include'];
@@ -247,7 +247,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   }
 
   /**
-   * Set the block content bundle type
+   * Set the block content bundle type.
    */
   public function setBlockContentBundle() {
     $base_id = $this->blockPlugin->getBaseId();

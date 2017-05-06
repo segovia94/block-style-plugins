@@ -36,13 +36,13 @@ class BlockStyle extends Plugin {
    *
    * @var array
    */
-  public $exclude = array();
+  public $exclude = [];
 
   /**
    * Include only these block types.
    *
    * @var array
    */
-  public $include = array();
+  public $include = [];
 
 }
