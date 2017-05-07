@@ -10,6 +10,8 @@ use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Component\Plugin\DerivativeInspectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
 
 /**
  * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyleBase
@@ -97,7 +99,7 @@ class BlockStyleBaseTest extends UnitTestCase
   /**
    * Tests the defaultStyles method.
    *
-   * @covers ::defaultStyles()
+   * @see ::defaultStyles()
    */
   public function testDefaultStyles() {
     $expected = [
@@ -143,6 +145,74 @@ class BlockStyleBaseTest extends UnitTestCase
     $return = $this->plugin->submitForm($form, $this->formState->reveal());
 
     $this->assertNull($return);
+  }
+
+  /**
+   * Tests the build method.
+   *
+   * @see ::build()
+   * @TODO Create a provider so that more combinations can be tested.
+   */
+  public function testBuild() {
+    $block = $this->prophesize(ConfigEntityInterface::CLASS);
+
+    $storage = $this->prophesize(EntityStorageInterface::CLASS);
+    $storage->load(1)->willReturn($block->reveal());
+
+    $this->entityTypeManager->getStorage('block')->willReturn($storage->reveal());
+
+    // No element ID is passed through the variables.
+    $variables = [];
+    $return = $this->plugin->build($variables);
+    $this->assertArrayEquals($variables, $return);
+
+    // No styles attached to the block.
+    $block->getThirdPartySetting('block_style_plugins', 'block_style_plugins')
+      ->willReturn(FALSE);
+
+    $variables = ['elements' => ['#id' => 1]];
+    $return = $this->plugin->build($variables);
+    $this->assertArrayEquals($variables, $return);
+
+    // Return the third party styles set in the plugin.
+    $block->getThirdPartySetting('block_style_plugins', 'block_style_plugins')
+      ->willReturn(['class1', 'class2']);
+
+    $variables = ['elements' => ['#id' => 1]];
+    $expected = [
+      'elements' => ['#id' => 1],
+      'block_styles' => [
+        'block_style_plugins' => ['class1', 'class2']
+      ],
+      'attributes' => [
+        'class' => [
+          'class1',
+          'class2'
+        ]
+      ]
+    ];
+    $return = $this->plugin->build($variables);
+    $this->assertArrayEquals($expected, $return);
+
+    // Don't set a class for integers.
+    $block->getThirdPartySetting('block_style_plugins', 'block_style_plugins')
+      ->willReturn(['class1', 1, 'class2', 0]);
+
+    $variables = ['elements' => ['#id' => 1]];
+    $expected = [
+      'elements' => ['#id' => 1],
+      'block_styles' => [
+        'block_style_plugins' => ['class1', 1, 'class2', 0]
+      ],
+      'attributes' => [
+        'class' => [
+          'class1',
+          'class2'
+        ]
+      ]
+    ];
+    $return = $this->plugin->build($variables);
+    $this->assertArrayEquals($expected, $return);
   }
 
   /**
