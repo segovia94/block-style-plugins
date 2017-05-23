@@ -40,7 +40,6 @@ a `themename.blockstyle.yml` file
 
 ```
 sample_block_style:
-  id: 'sample_block_style'
   label: 'Sample Block Style'
   class: '\Drupal\themename\Plugin\BlockStyle\SampleBlockStyle'
   exclude:
