@@ -12,6 +12,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\block\BlockForm;
+use Drupal\block\Entity\Block;
+use Drupal\Core\Block\BlockPluginInterface;
 
 /**
  * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyleBase
@@ -36,6 +39,11 @@ class BlockStyleBaseTest extends UnitTestCase
   protected $formState;
 
   /**
+   * @var \Drupal\Core\Block\BlockPluginInterface
+   */
+  protected $blockPlugin;
+
+  /**
    * @var \Drupal\block_style_plugins\Plugin\BlockStyleBase
    */
   protected $plugin;
@@ -55,6 +63,11 @@ class BlockStyleBaseTest extends UnitTestCase
 
     // Form state double
     $this->formState = $this->prophesize(FormStateInterface::CLASS);
+
+    // Block plugin
+    $this->blockPlugin = $this->prophesize(BlockPluginInterface::CLASS);
+    $this->blockPlugin->getBaseId()->willReturn('block_content');
+    $this->blockPlugin->getDerivativeId()->willReturn('uuid-1234');
 
     $configuration = [];
     $plugin_id = 'block_style_plugins';
@@ -94,6 +107,73 @@ class BlockStyleBaseTest extends UnitTestCase
       $plugin_definition
     );
     $this->assertInstanceOf('Drupal\block_style_plugins\Plugin\BlockStyleInterface', $instance);
+  }
+
+  /**
+   * Tests the prepareForm() method
+   *
+   * @see ::prepareForm()
+   */
+  public function testPrepareForm() {
+//    // Get the current block config entity.
+//    $entity = $form_state->getFormObject()->getEntity();
+//
+//    // Set properties and configuration.
+//    $this->blockPlugin = $entity->getPlugin();
+//    $this->setBlockContentBundle();
+//
+//    // Check to see if this should only apply to includes or if it has been
+//    // excluded.
+//    if ($this->includeOnly() && !$this->exclude()) {
+//
+//      // Create a fieldset to contain style fields.
+//      if (!isset($form['block_styles'])) {
+//        $form['block_styles'] = [
+//          '#type' => 'fieldset',
+//          '#title' => $this->t('Block Styles'),
+//          '#collapsible' => FALSE,
+//          '#collapsed' => FALSE,
+//          '#weight' => 0,
+//        ];
+//      }
+//
+//      $styles = $entity->getThirdPartySetting('block_style_plugins', $this->pluginId);
+//      $styles = is_array($styles) ? $styles : [];
+//      $this->setStyles($styles);
+//
+//      // Create containers to place each plugin style settings into the styles
+//      // fieldset.
+//      $form['third_party_settings']['block_style_plugins'][$this->pluginId] = [
+//        '#type' => 'container',
+//        '#group' => 'block_styles',
+//      ];
+//
+//      // Allow plugins to add field elements to this form.
+//      $elements = $this->formElements($form, $form_state);
+//      if ($elements) {
+//        $form['third_party_settings']['block_style_plugins'][$this->pluginId] += $elements;
+//      }
+//
+//      // Allow plugins to alter this form.
+//      $form = $this->formAlter($form, $form_state);
+//
+//      // Add the submitForm method to the form.
+//      array_unshift($form['actions']['submit']['#submit'], [$this, 'submitForm']);
+//    }
+//
+//    return $form;
+
+//    $block = $this->prophesize(Block::CLASS);
+//    $block->getPlugin()->willReturn($this->blockPlugin->reveal());
+//    $block->id()->willReturn(1);
+//
+//    $blockForm = $this->prophesize(BlockForm::CLASS);
+//    $blockForm->getEntity()->willReturn($block->reveal());
+//
+//    $this->formState->getFormObject()->willReturn($blockForm->reveal());
+//
+//    $form = [];
+//    $this->plugin->prepareForm($form, $this->formState->reveal());
   }
 
   /**
@@ -340,10 +420,7 @@ class BlockStyleBaseTest extends UnitTestCase
    */
   public function testSetBlockContentBundle() {
     // stub the blockPlugin
-    $blockPlugin = $this->prophesize(DerivativeInspectionInterface::CLASS);
-    $blockPlugin->getBaseId()->willReturn('block_content');
-    $blockPlugin->getDerivativeId()->willReturn('uuid-1234');
-    $this->setProtectedProperty('blockPlugin', $blockPlugin->reveal());
+    $this->setProtectedProperty('blockPlugin', $this->blockPlugin->reveal());
 
     $entity = $this->prophesize(EntityInterface::CLASS);
     $entity->bundle()->willReturn('basic_custom_block');
