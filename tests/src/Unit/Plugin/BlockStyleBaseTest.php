@@ -265,79 +265,72 @@ class BlockStyleBaseTest extends UnitTestCase
    * Tests the exclude method.
    *
    * @see ::exclude()
-   * @TODO Create a provider so that more combinations can be tested.
+   *
+   * @dataProvider excludeProvider
    */
-  public function testExclude() {
+  public function testExclude($plugin, $bundle, $expected) {
     // stub the blockPlugin
     $blockPlugin = $this->prophesize(PluginInspectionInterface::CLASS);
     $blockPlugin->getPluginId()->willReturn('basic_block');
     $this->plugin->blockPlugin = $blockPlugin->reveal();
 
-    // No exclude options are passed
-    $this->plugin->pluginDefinition['exclude'] = FALSE;
+    if ($plugin) {
+      $this->plugin->pluginDefinition['exclude'] = [$plugin];
+    }
+    if ($bundle) {
+      $this->plugin->blockContentBundle = $bundle;
+    }
     $return = $this->plugin->exclude();
-    $this->assertFalse($return);
+    $this->assertEquals($expected, $return);
+  }
 
-    // Exclude basic_block
-    $this->plugin->pluginDefinition['exclude'] = ['basic_block'];
-    $return = $this->plugin->exclude();
-    $this->assertTrue($return);
-
-    // Exclude a block that is not the current one
-    $this->plugin->pluginDefinition['exclude'] = ['wrong_block'];
-    $return = $this->plugin->exclude();
-    $this->assertFalse($return);
-
-    // Exclude a custom content block
-    $this->plugin->pluginDefinition['exclude'] = ['custom_block'];
-    $this->plugin->blockContentBundle = 'custom_block';
-    $return = $this->plugin->exclude();
-    $this->assertTrue($return);
-
-    // Exclude a custom content block that is not the current block
-    $this->plugin->pluginDefinition['exclude'] = ['wrong_custom_block'];
-    $this->plugin->blockContentBundle = 'custom_block';
-    $return = $this->plugin->exclude();
-    $this->assertFalse($return);
+  /**
+   * Provider for testExclude()
+   */
+  public function excludeProvider() {
+    return [
+      'No exclude options are passed' => [FALSE, NULL, FALSE],
+      'Exclude basic_block' => ['basic_block', NULL, TRUE],
+      'Exclude a block that is not the current one' => ['wrong_block', NULL, FALSE],
+      'Exclude a custom content block' => ['custom_block', 'custom_block', TRUE],
+      'Exclude a custom content block that is not the current block' => ['wrong_custom_block', 'custom_block', FALSE],
+    ];
   }
 
   /**
    * Tests the includeOnly method.
    *
    * @see ::includeOnly()
-   * @TODO Create a provider so that more combinations can be tested.
+   *
+   * @dataProvider includeOnlyProvider
    */
-  public function testIncludeOnly() {
+  public function testIncludeOnly($plugin, $bundle, $expected) {
     // stub the blockPlugin
     $blockPlugin = $this->prophesize(PluginInspectionInterface::CLASS);
     $blockPlugin->getPluginId()->willReturn('basic_block');
     $this->plugin->blockPlugin = $blockPlugin->reveal();
 
-    // No include options are passed
+    if ($plugin) {
+      $this->plugin->pluginDefinition['include'] = [$plugin];
+    }
+    if ($bundle) {
+      $this->plugin->blockContentBundle = $bundle;
+    }
     $return = $this->plugin->includeOnly();
-    $this->assertTrue($return);
+    $this->assertEquals($expected, $return);
+  }
 
-    // Include basic_block
-    $this->plugin->pluginDefinition['include'] = ['basic_block'];
-    $return = $this->plugin->includeOnly();
-    $this->assertTrue($return);
-
-    // Include only a sample_block
-    $this->plugin->pluginDefinition['include'] = ['wrong_block'];
-    $return = $this->plugin->includeOnly();
-    $this->assertFalse($return);
-
-    // Include a custom content block
-    $this->plugin->pluginDefinition['include'] = ['custom_block'];
-    $this->plugin->blockContentBundle = 'custom_block';
-    $return = $this->plugin->includeOnly();
-    $this->assertTrue($return);
-
-    // Include a custom content block which is not the current one
-    $this->plugin->pluginDefinition['include'] = ['wrong_custom_block'];
-    $this->plugin->blockContentBundle = 'custom_block';
-    $return = $this->plugin->includeOnly();
-    $this->assertFalse($return);
+  /**
+   * Provider for testIncludeOnly()
+   */
+  public function includeOnlyProvider() {
+    return [
+      'No include options are passed' => [NULL, NULL, TRUE],
+      'Include basic_block' => ['basic_block', NULL, TRUE],
+      'Include only a sample_block' => ['wrong_block', NULL, FALSE],
+      'Include a custom content block' => ['custom_block', 'custom_block', TRUE],
+      'Include a custom content block which is not the current one' => ['wrong_custom_block', 'custom_block', FALSE],
+    ];
   }
 
   /**
