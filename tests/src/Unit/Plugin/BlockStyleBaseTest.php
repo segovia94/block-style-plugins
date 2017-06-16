@@ -272,13 +272,13 @@ class BlockStyleBaseTest extends UnitTestCase
     // stub the blockPlugin
     $blockPlugin = $this->prophesize(PluginInspectionInterface::CLASS);
     $blockPlugin->getPluginId()->willReturn('basic_block');
-    $this->plugin->blockPlugin = $blockPlugin->reveal();
+    $this->setProtectedProperty('blockPlugin', $blockPlugin->reveal());
 
     if ($plugin) {
-      $this->plugin->pluginDefinition['exclude'] = [$plugin];
+      $this->setProtectedProperty('pluginDefinition', ['exclude' => [$plugin]]);
     }
     if ($bundle) {
-      $this->plugin->blockContentBundle = $bundle;
+      $this->setProtectedProperty('blockContentBundle', $bundle);
     }
     $return = $this->plugin->exclude();
     $this->assertEquals($expected, $return);
@@ -308,13 +308,13 @@ class BlockStyleBaseTest extends UnitTestCase
     // stub the blockPlugin
     $blockPlugin = $this->prophesize(PluginInspectionInterface::CLASS);
     $blockPlugin->getPluginId()->willReturn('basic_block');
-    $this->plugin->blockPlugin = $blockPlugin->reveal();
+    $this->setProtectedProperty('blockPlugin', $blockPlugin->reveal());
 
     if ($plugin) {
-      $this->plugin->pluginDefinition['include'] = [$plugin];
+      $this->setProtectedProperty('pluginDefinition', ['include' => [$plugin]]);
     }
     if ($bundle) {
-      $this->plugin->blockContentBundle = $bundle;
+      $this->setProtectedProperty('blockContentBundle', $bundle);
     }
     $return = $this->plugin->includeOnly();
     $this->assertEquals($expected, $return);
@@ -343,7 +343,7 @@ class BlockStyleBaseTest extends UnitTestCase
     $blockPlugin = $this->prophesize(DerivativeInspectionInterface::CLASS);
     $blockPlugin->getBaseId()->willReturn('block_content');
     $blockPlugin->getDerivativeId()->willReturn('uuid-1234');
-    $this->plugin->blockPlugin = $blockPlugin->reveal();
+    $this->setProtectedProperty('blockPlugin', $blockPlugin->reveal());
 
     $entity = $this->prophesize(EntityInterface::CLASS);
     $entity->bundle()->willReturn('basic_custom_block');
@@ -352,9 +352,38 @@ class BlockStyleBaseTest extends UnitTestCase
       ->willReturn($entity->reveal());
 
     $this->plugin->setBlockContentBundle();
-    $bundle = $this->plugin->blockContentBundle;
+    $bundle = $this->getProtectedProperty('blockContentBundle');
 
     $this->assertEquals('basic_custom_block', $bundle);
+  }
+
+  /**
+   * Get a protected property on the plugin via reflection
+   *
+   * @param $property - property on instance
+   *
+   * @return mixed
+   */
+  public function getProtectedProperty($property) {
+    $reflection = new \ReflectionClass($this->plugin);
+    $reflection_property = $reflection->getProperty($property);
+    $reflection_property->setAccessible(true);
+    return $reflection_property->getValue($this->plugin);
+  }
+
+  /**
+   * Sets a protected property on the plugin via reflection
+   *
+   * @param $property - property on instance being modified
+   * @param $value - new value of the property being modified
+   *
+   * @return void
+   */
+  public function setProtectedProperty($property, $value) {
+    $reflection = new \ReflectionClass($this->plugin);
+    $reflection_property = $reflection->getProperty($property);
+    $reflection_property->setAccessible(true);
+    $reflection_property->setValue($this->plugin, $value);
   }
 
 }
