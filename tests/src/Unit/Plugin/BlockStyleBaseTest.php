@@ -6,7 +6,6 @@ use Drupal\Tests\UnitTestCase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Component\Plugin\PluginInspectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -14,7 +13,6 @@ use Drupal\Core\Config\Entity\ConfigEntityInterface;
 use Drupal\block\BlockForm;
 use Drupal\block\Entity\Block;
 use Drupal\Core\Block\BlockPluginInterface;
-use Drupal\Core\Config\Entity\ThirdPartySettingsInterface;
 
 /**
  * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyleBase

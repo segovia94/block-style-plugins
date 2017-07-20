@@ -14,7 +14,7 @@ class PluginDiscoveryTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['block_style_plugins'];
+  public static $modules = ['block_style_plugins', 'block_style_plugins_test'];
 
   /**
  * Make sure that plugins are discovered.
@@ -24,15 +24,35 @@ class PluginDiscoveryTest extends KernelTestBase {
     $style_plugins = $plugin_manager->getDefinitions();
 
     $expected = [
-      'sample_block_style' => [
+      'simple_class' => [
+        'exclude' => [],
+        'include' => [],
+        'id' => 'simple_class',
+        'label' => 'Simple Class',
+        'class' => 'Drupal\block_style_plugins_test\Plugin\BlockStyle\SimpleClass',
+        'provider' => 'block_style_plugins_test'
+      ],
+      'dropdown_with_include' => [
         'exclude' => [],
         'include' => [
-          'block_plugin_base_id'
+          'system_powered_by_block',
+          'basic',
         ],
-        'id' => 'sample_block_style',
-        'label' => 'Sample Block Style',
-        'class' => 'Drupal\block_style_plugins\Plugin\BlockStyle\SampleBlockStyle',
-        'provider' => 'block_style_plugins'
+        'id' => 'dropdown_with_include',
+        'label' => 'Dropdown with Include',
+        'class' => 'Drupal\block_style_plugins_test\Plugin\BlockStyle\DropdownWithInclude',
+        'provider' => 'block_style_plugins_test'
+      ],
+      'checkbox_with_exclude' => [
+        'exclude' => [
+          'system_powered_by_block',
+          'basic',
+        ],
+        'include' => [],
+        'id' => 'checkbox_with_exclude',
+        'label' => 'Checkbox with Exclude',
+        'class' => 'Drupal\block_style_plugins_test\Plugin\BlockStyle\CheckboxWithExclude',
+        'provider' => 'block_style_plugins_test'
       ]
     ];
     $this->assertEquals($expected, $style_plugins);
@@ -44,7 +64,7 @@ class PluginDiscoveryTest extends KernelTestBase {
   public function testInstanceCreation() {
     $plugin_manager = $this->container->get('plugin.manager.block_style.processor');
 
-    $style_plugin = $plugin_manager->createInstance('sample_block_style');
+    $style_plugin = $plugin_manager->createInstance('simple_class');
 
     $this->assertInstanceOf('Drupal\block_style_plugins\Plugin\BlockStyleInterface', $style_plugin);
   }

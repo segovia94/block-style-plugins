@@ -96,6 +96,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    */
   public function prepareForm($form, FormStateInterface $form_state) {
     // Get the current block config entity.
+    /** @var \Drupal\block\Entity\Block $entity */
     $entity = $form_state->getFormObject()->getEntity();
 
     // Set properties and configuration.
@@ -175,6 +176,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
     }
 
     // Load the block config entity.
+    /** @var \Drupal\block\Entity\Block $block */
     $block = $this->entityTypeManager->getStorage('block')->load($variables['elements']['#id']);
     $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
 

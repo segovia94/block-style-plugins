@@ -35,6 +35,7 @@ function block_style_plugins_form_block_form_alter(&$form, FormStateInterface $f
   $style_plugins = $plugin_manager->getDefinitions();
 
   foreach ($style_plugins as $name => $plugin) {
+    /** @var \Drupal\block_style_plugins\Plugin\BlockStyleInterface $style_plugin */
     $style_plugin = $plugin_manager->createInstance($name);
     $form = $style_plugin->prepareForm($form, $form_state);
   }
