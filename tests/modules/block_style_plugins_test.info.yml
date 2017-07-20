@@ -1,0 +1,10 @@
+name: 'Block Style Plugins - Test'
+type: module
+description: 'Provides sample plugins for tests.'
+package: Testing
+version: VERSION
+core: 8.x
+dependencies:
+  - block_style_plugins
+  - block
+  - block_content

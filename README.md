@@ -12,8 +12,10 @@ options to to block configuration by creating a custom plugin.
 
 ### Setting up a block style in a module
 
-A sample Block Style plugin can be found in 
-`block_style_plugins/src/Plugin/BlockStyle/SampleBlockStyle.php`
+A sample Block Style plugins can be found in the `tests` directory
+`block_style_plugins/tests/modules/src/Plugin/BlockStyle/SimpleClass.php`
+`block_style_plugins/tests/modules/src/Plugin/BlockStyle/DropdownWithInclude.php`
+`block_style_plugins/tests/modules/src/Plugin/BlockStyle/CheckboxWithExclude.php`
 
 Create a new plugin class extending the BlockStyleBase class.
 

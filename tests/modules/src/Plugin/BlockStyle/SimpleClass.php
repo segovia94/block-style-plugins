@@ -1,40 +1,36 @@
 <?php
 
-namespace Drupal\block_style_plugins\Plugin\BlockStyle;
+namespace Drupal\block_style_plugins_test\Plugin\BlockStyle;
 
 use Drupal\block_style_plugins\Plugin\BlockStyleBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Provides a 'SampleBlockStyle' block.
+ * Provides a 'SimpleClass' block style for adding a class in a text field.
  *
  * @BlockStyle(
- *  id = "sample_block_style",
- *  label = @Translation("Sample Block Style"),
- *  include = {
- *    "block_plugin_base_id"
- *  }
+ *  id = "simple_class",
+ *  label = @Translation("Simple Class"),
  * )
  */
-class SampleBlockStyle extends BlockStyleBase {
+class SimpleClass extends BlockStyleBase {
 
   /**
    * {@inheritdoc}
    */
   public function defaultStyles() {
-    return ['sample_class' => ''];
+    return ['simple_class' => ''];
   }
 
   /**
    * {@inheritdoc}
    */
   public function formElements($form, FormStateInterface $form_state) {
-    // Title Style.
-    $elements['sample_class'] = [
+    $elements['simple_class'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Add a custom class to this block'),
       '#description' => $this->t('Do not add the "period" to the start of the class'),
-      '#default_value' => $this->styles['sample_class'],
+      '#default_value' => $this->styles['simple_class'],
     ];
 
     return $elements;

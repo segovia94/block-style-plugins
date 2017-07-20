@@ -8,7 +8,6 @@ use Drupal\KernelTests\KernelTestBase;
  * Test of the Block Style Plugins discovery integration.
  *
  * @group block_style_plugins
- * @group current
  */
 class PluginDiscoveryTest extends KernelTestBase {
 
