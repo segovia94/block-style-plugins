@@ -17,8 +17,9 @@ class PluginDiscoveryTest extends KernelTestBase {
   public static $modules = ['block_style_plugins', 'block_style_plugins_test'];
 
   /**
- * Make sure that plugins are discovered.
- */
+   * Make sure that plugins are discovered.
+   * @group current
+   */
   public function testPluginDiscovery() {
     $plugin_manager = $this->container->get('plugin.manager.block_style.processor');
     $style_plugins = $plugin_manager->getDefinitions();
@@ -48,11 +49,34 @@ class PluginDiscoveryTest extends KernelTestBase {
           'system_powered_by_block',
           'basic',
         ],
-        'include' => [],
         'id' => 'checkbox_with_exclude',
         'label' => 'Checkbox with Exclude',
         'class' => 'Drupal\block_style_plugins_test\Plugin\BlockStyle\CheckboxWithExclude',
         'provider' => 'block_style_plugins_test'
+      ],
+      'form_fields_created_with_yaml' => [
+        'include' => [
+          'system_powered_by_block',
+        ],
+        'id' => 'form_fields_created_with_yaml',
+        'label' => 'Styles Created by Yaml',
+        'class' => 'Drupal\block_style_plugins\Plugin\BlockStyle',
+        'provider' => 'block_style_plugins_test',
+        'form' => [
+          'test_field' => [
+            '#type' => 'textfield',
+            '#title' => 'Title Created by Yaml',
+            '#default_value' => 'text goes here',
+          ],
+          'second_field' => [
+            '#type' => 'select',
+            '#title' => 'Choose a style',
+            '#options' => [
+              'style-1' => 'Style 1',
+              'style-2' => 'Style 2',
+            ],
+          ],
+        ],
       ]
     ];
     $this->assertEquals($expected, $style_plugins);

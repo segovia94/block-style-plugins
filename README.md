@@ -5,6 +5,8 @@ options to block configuration by creating a custom plugin. It is advisable to
 do this primarily in themes since the majority of styles should be specific to a
 theme.
 
+**Tutorial Video:** [https://youtu.be/Y0t8owlV2_4](https://youtu.be/Y0t8owlV2_4) 
+
 ### Dependencies
 
 - block
