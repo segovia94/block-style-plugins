@@ -25,7 +25,7 @@ class SimpleClass extends BlockStyleBase {
   /**
    * {@inheritdoc}
    */
-  public function formElements(array $form, FormStateInterface $form_state) {
+  public function formElements($form, FormStateInterface $form_state) {
     $elements['simple_class'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Add a custom class to this block'),

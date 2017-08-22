@@ -39,7 +39,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @return array
    *   A list of all form field elements that will allow setting styles.
    */
-  public function formElements(array $form, FormStateInterface $form_state);
+  public function formElements($form, FormStateInterface $form_state);
 
   /**
    * Returns a customized form array with new form settings for styles.
@@ -62,7 +62,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public function submitForm(array $form, FormStateInterface $form_state);
+  public function submitForm($form, FormStateInterface $form_state);
 
   /**
    * Builds and returns the renderable array for this block style plugin.

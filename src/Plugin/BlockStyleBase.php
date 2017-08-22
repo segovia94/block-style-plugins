@@ -150,7 +150,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   /**
    * {@inheritdoc}
    */
-  public function formElements(array $form, FormStateInterface $form_state) {
+  public function formElements($form, FormStateInterface $form_state) {
     return [];
   }
 
@@ -164,7 +164,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array $form, FormStateInterface $form_state) {
+  public function submitForm($form, FormStateInterface $form_state) {
     return NULL;
   }
 
