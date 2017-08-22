@@ -39,7 +39,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @return array
    *   A list of all form field elements that will allow setting styles.
    */
-  public function formElements($form, FormStateInterface $form_state);
+  public function formElements(array $form, FormStateInterface $form_state);
 
   /**
    * Returns a customized form array with new form settings for styles.
