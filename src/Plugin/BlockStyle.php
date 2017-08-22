@@ -27,7 +27,7 @@ class BlockStyle extends BlockStyleBase {
   /**
    * {@inheritdoc}
    */
-  public function formElements($form, FormStateInterface $form_state) {
+  public function formElements(array $form, FormStateInterface $form_state) {
     $elements = [];
 
     // Fields that will need translations.
