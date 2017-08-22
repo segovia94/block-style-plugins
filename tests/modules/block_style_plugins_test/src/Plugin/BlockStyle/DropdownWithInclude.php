@@ -31,7 +31,7 @@ class DropdownWithInclude extends BlockStyleBase {
   /**
    * {@inheritdoc}
    */
-  public function formElements($form, FormStateInterface $form_state) {
+  public function formElements(array $form, FormStateInterface $form_state) {
     // The value of the options should be the class name which will be applied.
     $elements['dropdown_class'] = [
       '#type' => 'select',
