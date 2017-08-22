@@ -9,14 +9,8 @@ use Drupal\Core\Form\FormStateInterface;
  * Provides a 'CheckboxWithExclude' block style for adding a checkbox to all
  * blocks except for the "Powered by Drupal" block.
  *
- * @BlockStyle(
- *  id = "checkbox_with_exclude",
- *  label = @Translation("Checkbox with Exclude"),
- *  exclude = {
- *    "system_powered_by_block",
- *    "basic",
- *  }
- * )
+ * The plugin definition for this class is defined in the
+ * block_style_plugins_test.blockstyle.yml file.
  */
 class CheckboxWithExclude extends BlockStyleBase {
 
