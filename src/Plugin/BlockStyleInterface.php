@@ -24,11 +24,12 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @return array
    *   The renderable form array representing the entire configuration form.
    */
-  public function prepareForm($form, FormStateInterface $form_state);
+  public function prepareForm(array $form, FormStateInterface $form_state);
 
   /**
-   * Returns an array of field elements that should be injected into the block
-   * configuration form.
+   * Returns an array of field elements.
+   *
+   * These form fields will be injected into the block configuration form.
    *
    * @param array $form
    *   The form definition array for the block configuration form.
@@ -38,7 +39,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @return array
    *   A list of all form field elements that will allow setting styles.
    */
-  public function formElements($form, FormStateInterface $form_state);
+  public function formElements(array $form, FormStateInterface $form_state);
 
   /**
    * Returns a customized form array with new form settings for styles.
@@ -51,7 +52,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @return array
    *   The renderable form array representing the entire configuration form.
    */
-  public function formAlter($form, FormStateInterface $form_state);
+  public function formAlter(array $form, FormStateInterface $form_state);
 
   /**
    * Adds block style specific submission handling for the block form.
@@ -61,12 +62,13 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public function submitForm($form, FormStateInterface $form_state);
+  public function submitForm(array $form, FormStateInterface $form_state);
 
   /**
    * Builds and returns the renderable array for this block style plugin.
    *
    * @param array $variables
+   *   List of all variables sent to the theme system.
    *
    * @return array
    *   A renderable array representing the content of the block.
@@ -74,18 +76,24 @@ interface BlockStyleInterface extends PluginInspectionInterface {
   public function build(array $variables);
 
   /**
+   * Exclude styles from appearing on a block.
+   *
    * Determine if configuration should be excluded from certain blocks when a
    * block plugin id or block content type is passed from a plugin.
    *
    * @return bool
+   *   Return True if the current block should not get the styles.
    */
   public function exclude();
 
   /**
+   * Only show styles on specific blocks.
+   *
    * Determine if configuration should be only included on certain blocks when a
    * block plugin id or block content type is passed from a plugin.
    *
    * @return bool
+   *   Return True if the current block should only get the styles.
    */
   public function includeOnly();
 
@@ -93,6 +101,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * Create a list of style configuration defaults.
    *
    * @return array
+   *   Return a list of all the default styles.
    */
   public function defaultStyles();
 
@@ -100,6 +109,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * Sets the style configuration for this plugin instance.
    *
    * @param array $styles
+   *   A list of styles that need to be applied.
    */
   public function setStyles(array $styles);
 
@@ -107,6 +117,7 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    * Retrieve a list of style configuration.
    *
    * @return array
+   *   Return a list of all styles.
    */
   public function getStyles();
 

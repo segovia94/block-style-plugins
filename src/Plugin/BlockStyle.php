@@ -30,7 +30,7 @@ class BlockStyle extends BlockStyleBase {
   public function formElements($form, FormStateInterface $form_state) {
     $elements = [];
 
-    // Fields that will need translations
+    // Fields that will need translations.
     $translation_fields = [
       '#title',
       '#description',

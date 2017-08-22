@@ -58,6 +58,8 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   protected $styles;
 
   /**
+   * Construct method for BlockStyleBase.
+   *
    * @param array $configuration
    *   A configuration array containing information about the plugin instance.
    * @param string $plugin_id
