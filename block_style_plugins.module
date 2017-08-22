@@ -31,6 +31,7 @@ function block_style_plugins_help($route_name, RouteMatchInterface $route_match)
  */
 function block_style_plugins_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // Retrieve a list of style plugin definitions.
+  /** @var Drupal\block_style_plugins\Plugin\BlockStyleManager $plugin_manager */
   $plugin_manager = \Drupal::service('plugin.manager.block_style.processor');
   $style_plugins = $plugin_manager->getDefinitions();
 
@@ -46,6 +47,7 @@ function block_style_plugins_form_block_form_alter(&$form, FormStateInterface $f
  */
 function block_style_plugins_preprocess_block(&$variables) {
   // Retrieve a list of style plugin definitions.
+  /** @var Drupal\block_style_plugins\Plugin\BlockStyleManager $plugin_manager */
   $plugin_manager = \Drupal::service('plugin.manager.block_style.processor');
   $style_plugins = $plugin_manager->getDefinitions();
 
@@ -59,6 +61,7 @@ function block_style_plugins_preprocess_block(&$variables) {
  */
 function block_style_plugins_themes_uninstalled(array $themes) {
   // Clear the Plugins cache when a theme using a plugin is uninstalled.
+  /** @var Drupal\block_style_plugins\Plugin\BlockStyleManager $plugin_manager */
   $plugin_manager = \Drupal::service('plugin.manager.block_style.processor');
   $style_plugins = $plugin_manager->getDefinitions();
   $clear_cache = FALSE;
