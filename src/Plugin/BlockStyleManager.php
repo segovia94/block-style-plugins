@@ -14,6 +14,15 @@ use Drupal\Core\Plugin\Discovery\YamlDiscoveryDecorator;
 class BlockStyleManager extends DefaultPluginManager {
 
   /**
+   * A set of defaults to be referenced by $this->processDefinition().
+   *
+   * @var array
+   */
+  protected $defaults = [
+    'class' => 'Drupal\block_style_plugins\Plugin\BlockStyle'
+  ];
+
+  /**
    * The theme handler.
    *
    * @var \Drupal\Core\Extension\ThemeHandlerInterface
