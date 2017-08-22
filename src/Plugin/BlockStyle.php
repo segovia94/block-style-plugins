@@ -30,11 +30,22 @@ class BlockStyle extends BlockStyleBase {
   public function formElements($form, FormStateInterface $form_state) {
     $elements = [];
 
+    // Fields that will need translations
+    $translation_fields = [
+      '#title',
+      '#description',
+    ];
+
     // Get form fields from yaml.
     foreach ($this->pluginDefinition['form'] as $field => $setting) {
       $element = [];
       foreach ($setting as $property_key => $property) {
-        $element[$property_key] = $property;
+        if (in_array($property_key, $translation_fields)) {
+          $element[$property_key] = $this->t($property);
+        }
+        else {
+          $element[$property_key] = $property;
+        }
       }
       if (isset($this->styles[$field])) {
         $element['#default_value'] = $this->styles[$field];
