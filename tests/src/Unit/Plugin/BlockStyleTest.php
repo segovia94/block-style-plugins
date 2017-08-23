@@ -12,43 +12,49 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
  * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyle
  * @group block_style_plugins
  */
-class BlockStyleTest extends UnitTestCase
-{
+class BlockStyleTest extends UnitTestCase {
 
   /**
+   * Mocked entity repository service.
+   *
    * @var \Drupal\Core\Entity\EntityRepository
    */
   protected $entityRepository;
 
   /**
+   * Mocked entity type manager service.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
+   * Mocked form state.
+   *
    * @var \Drupal\Core\Form\FormStateInterface
    */
   protected $formState;
 
   /**
-   * @var \Drupal\block_style_plugins\Plugin\BlockStyleBase
+   * Instance of the BlockStyle plugin.
+   *
+   * @var \Drupal\block_style_plugins\Plugin\BlockStyle
    */
   protected $plugin;
 
   /**
-   * Create the setup for constants and configFactory stub
+   * Create the setup for constants and configFactory stub.
    */
-  protected function setUp()
-  {
+  protected function setUp() {
     parent::setUp();
 
-    // Stub the Iconset Finder Service
+    // Stub the Iconset Finder Service.
     $this->entityRepository = $this->prophesize(EntityRepositoryInterface::CLASS);
 
-    // Stub the Entity Type Manager
+    // Stub the Entity Type Manager.
     $this->entityTypeManager = $this->prophesize(EntityTypeManagerInterface::CLASS);
 
-    // Form state double
+    // Form state double.
     $this->formState = $this->prophesize(FormStateInterface::CLASS);
 
     $configuration = [];
@@ -69,8 +75,8 @@ class BlockStyleTest extends UnitTestCase
         'third_field' => [
           '#type' => 'textfield',
           '#title' => 'Third Box',
-        ]
-      ]
+        ],
+      ],
     ];
 
     $this->plugin = new BlockStyle(
@@ -81,7 +87,7 @@ class BlockStyleTest extends UnitTestCase
       $this->entityTypeManager->reveal()
     );
 
-    // Create a translation stub for the t() method
+    // Create a translation stub for the t() method.
     $translator = $this->getStringTranslationStub();
     $this->plugin->setStringTranslation($translator);
   }
@@ -122,13 +128,13 @@ class BlockStyleTest extends UnitTestCase
         '#type' => 'textfield',
         '#title' => 'Third Box',
         '#default_value' => 'user set value',
-      ]
+      ],
     ];
 
-    // Use reflection to alter the protected $this->plugin->styles
+    // Use reflection to alter the protected $this->plugin->styles.
     $reflectionObject = new \ReflectionObject($this->plugin);
     $property = $reflectionObject->getProperty('styles');
-    $property->setAccessible(true);
+    $property->setAccessible(TRUE);
     $property->setValue($this->plugin, ['third_field' => 'user set value']);
 
     $form = [];

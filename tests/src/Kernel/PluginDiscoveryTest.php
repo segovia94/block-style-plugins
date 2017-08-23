@@ -18,7 +18,6 @@ class PluginDiscoveryTest extends KernelTestBase {
 
   /**
    * Make sure that plugins are discovered.
-   * @group current
    */
   public function testPluginDiscovery() {
     $plugin_manager = $this->container->get('plugin.manager.block_style.processor');
@@ -31,7 +30,7 @@ class PluginDiscoveryTest extends KernelTestBase {
         'id' => 'simple_class',
         'label' => 'Simple Class',
         'class' => 'Drupal\block_style_plugins_test\Plugin\BlockStyle\SimpleClass',
-        'provider' => 'block_style_plugins_test'
+        'provider' => 'block_style_plugins_test',
       ],
       'dropdown_with_include' => [
         'exclude' => [],
@@ -42,7 +41,7 @@ class PluginDiscoveryTest extends KernelTestBase {
         'id' => 'dropdown_with_include',
         'label' => 'Dropdown with Include',
         'class' => 'Drupal\block_style_plugins_test\Plugin\BlockStyle\DropdownWithInclude',
-        'provider' => 'block_style_plugins_test'
+        'provider' => 'block_style_plugins_test',
       ],
       'checkbox_with_exclude' => [
         'exclude' => [
@@ -52,7 +51,7 @@ class PluginDiscoveryTest extends KernelTestBase {
         'id' => 'checkbox_with_exclude',
         'label' => 'Checkbox with Exclude',
         'class' => 'Drupal\block_style_plugins_test\Plugin\BlockStyle\CheckboxWithExclude',
-        'provider' => 'block_style_plugins_test'
+        'provider' => 'block_style_plugins_test',
       ],
       'form_fields_created_with_yaml' => [
         'include' => [
@@ -77,7 +76,7 @@ class PluginDiscoveryTest extends KernelTestBase {
             ],
           ],
         ],
-      ]
+      ],
     ];
     $this->assertEquals($expected, $style_plugins);
   }

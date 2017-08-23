@@ -6,6 +6,8 @@ use Drupal\block_style_plugins\Plugin\BlockStyleBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
+ * Demonstrate using the 'include' parameter.
+ *
  * Provides a 'DropdownWithInclude' block style for only adding styles to the
  * "Powered by Drupal" block.
  *
