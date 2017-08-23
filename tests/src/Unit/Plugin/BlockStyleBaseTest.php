@@ -438,7 +438,7 @@ class BlockStyleBaseTest extends UnitTestCase {
    * Get a protected property on the plugin via reflection.
    *
    * @param string $property
-   *   property on instance.
+   *   Property on instance.
    *
    * @return mixed
    *   Return the value of the protected property.
