@@ -56,7 +56,7 @@ class BlockStyleBaseTest extends UnitTestCase {
   protected $plugin;
 
   /**
-   * Create the setup for constants and configFactory stub
+   * Create the setup for constants and configFactory stub.
    */
   protected function setUp() {
     parent::setUp();
@@ -400,9 +400,15 @@ class BlockStyleBaseTest extends UnitTestCase {
       'No include options are passed' => [NULL, NULL, TRUE],
       'Include basic_block' => ['basic_block', NULL, TRUE],
       'Include only a sample_block' => ['wrong_block', NULL, FALSE],
-      'Include a custom content block' => ['custom_block', 'custom_block', TRUE],
+      'Include a custom content block' => [
+        'custom_block',
+        'custom_block',
+        TRUE,
+      ],
       'Include a custom content block which is not the current one' => [
-        'wrong_custom_block', 'custom_block', FALSE
+        'wrong_custom_block',
+        'custom_block',
+        FALSE,
       ],
     ];
   }
@@ -431,7 +437,7 @@ class BlockStyleBaseTest extends UnitTestCase {
   /**
    * Get a protected property on the plugin via reflection.
    *
-   * @param $property
+   * @param string $property
    *   property on instance.
    *
    * @return mixed
@@ -447,10 +453,10 @@ class BlockStyleBaseTest extends UnitTestCase {
   /**
    * Sets a protected property on the plugin via reflection.
    *
-   * @param mixed $property
-   *   property on instance being modified.
+   * @param string $property
+   *   Property on instance being modified.
    * @param mixed $value
-   *   new value of the property being modified.
+   *   New value of the property being modified.
    */
   public function setProtectedProperty($property, $value) {
     $reflection = new \ReflectionClass($this->plugin);
