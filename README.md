@@ -29,10 +29,14 @@ sample_block_style:
       '#type': 'textfield'
       '#title': 'Add a custom css class'
       '#default_value': 'my-class'
+  template: block__my_custom_template
 ```
 
 > Notice: Form fields need to be on the same level and cannot currently be
 nested.
+
+By adding a `template` you may specify a template theme suggestion of your
+choosing for the block.
 
 ### Example Plugins
 

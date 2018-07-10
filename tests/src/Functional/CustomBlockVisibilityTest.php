@@ -11,7 +11,6 @@ use Drupal\Tests\block_content\Functional\BlockContentTestBase;
  * types.
  *
  * @group block_style_plugins
- * @group current
  */
 class CustomBlockVisibilityTest extends BlockContentTestBase {
 

@@ -77,6 +77,19 @@ class PluginDiscoveryTest extends KernelTestBase {
           ],
         ],
       ],
+      'template_set_with_yaml' => [
+        'id' => 'template_set_with_yaml',
+        'label' => 'Template Set by Yaml',
+        'class' => 'Drupal\block_style_plugins\Plugin\BlockStyle',
+        'provider' => 'block_style_plugins_test',
+        'template' => 'block__test_custom',
+        'form' => [
+          'test_field' => [
+            '#type' => 'textfield',
+            '#title' => 'Template Title',
+          ],
+        ],
+      ],
     ];
     $this->assertEquals($expected, $style_plugins);
   }

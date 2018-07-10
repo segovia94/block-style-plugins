@@ -44,4 +44,28 @@ class BlockStyle extends BlockStyleBase {
     return $elements;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function themeSuggestion(array $suggestions, array $variables) {
+    // Ensure that a template is set in the info file.
+    if (isset($this->pluginDefinition['template'])) {
+      $template = $this->pluginDefinition['template'];
+
+      $styles = $this->getStylesFromVariables($variables);
+
+      // Only set suggestions if styles have been set for the block.
+      if ($styles) {
+        foreach ($styles as $style) {
+          if (!empty($style)) {
+            $suggestions[] = $template;
+            break;
+          }
+        }
+      }
+    }
+
+    return $suggestions;
+  }
+
 }

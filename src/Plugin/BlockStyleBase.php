@@ -172,15 +172,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function build(array $variables) {
-    // Ensure that we have a block id.
-    if (empty($variables['elements']['#id'])) {
-      return $variables;
-    }
-
-    // Load the block config entity.
-    /** @var \Drupal\block\Entity\Block $block */
-    $block = $this->entityTypeManager->getStorage('block')->load($variables['elements']['#id']);
-    $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
+    $styles = $this->getStylesFromVariables($variables);
 
     if ($styles) {
       // Add all styles config to the $variables array.
@@ -263,6 +255,13 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function themeSuggestion(array $suggestions, array $variables) {
+    return $suggestions;
+  }
+
+  /**
    * Set the block content bundle type.
    */
   public function setBlockContentBundle() {
@@ -275,6 +274,35 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
       if ($plugin) {
         $this->blockContentBundle = $plugin->bundle();
       }
+    }
+  }
+
+  /**
+   * Get styles for a block set in a preprocess $variables array.
+   *
+   * @param array $variables
+   *   Block variables coming from a preprocess hook.
+   *
+   * @return array|false
+   *   Return the styles array or FALSE
+   */
+  protected function getStylesFromVariables(array $variables) {
+    // Ensure that we have a block id.
+    if (empty($variables['elements']['#id'])) {
+      return FALSE;
+    }
+
+    // Load the block config entity.
+    /** @var \Drupal\block\Entity\Block $block */
+    $block = $this->entityTypeManager->getStorage('block')->load($variables['elements']['#id']);
+    $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
+
+    if ($styles) {
+      $this->setStyles($styles);
+      return $styles;
+    }
+    else {
+      return FALSE;
     }
   }
 

@@ -7,6 +7,8 @@ use Drupal\block_style_plugins\Plugin\BlockStyle;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 
 /**
  * @coversDefaultClass \Drupal\block_style_plugins\Plugin\BlockStyle
@@ -139,6 +141,40 @@ class BlockStyleTest extends UnitTestCase {
 
     $form = [];
     $return = $this->plugin->formElements($form, $this->formState->reveal());
+
+    $this->assertArrayEquals($expected, $return);
+  }
+
+  /**
+   * Tests the themeSuggestion method.
+   *
+   * @see ::themeSuggestion()
+   */
+  public function testThemeSuggestion() {
+    $block = $this->prophesize(ConfigEntityInterface::CLASS);
+
+    $storage = $this->prophesize(EntityStorageInterface::CLASS);
+    $storage->load(1)->willReturn($block->reveal());
+
+    $this->entityTypeManager->getStorage('block')->willReturn($storage->reveal());
+
+    // Return the third party styles set in the plugin.
+    $block->getThirdPartySetting('block_style_plugins', 'block_style_plugins')
+      ->willReturn(['class1', 'class2']);
+
+    // Use reflection to alter the protected $this->plugin->pluginDefinition.
+    $reflectionObject = new \ReflectionObject($this->plugin);
+    $property = $reflectionObject->getProperty('pluginDefinition');
+    $property->setAccessible(TRUE);
+    $property->setValue($this->plugin, ['template' => 'custom_template']);
+
+    $suggestions = [];
+    $variables = ['elements' => ['#id' => 1]];
+    $expected = [
+      'custom_template'
+    ];
+
+    $return = $this->plugin->themeSuggestion($suggestions, $variables);
 
     $this->assertArrayEquals($expected, $return);
   }

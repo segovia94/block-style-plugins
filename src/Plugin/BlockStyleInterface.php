@@ -98,6 +98,19 @@ interface BlockStyleInterface extends PluginInspectionInterface {
   public function includeOnly();
 
   /**
+   * Add theme suggestions for the block.
+   *
+   * @param array $suggestions
+   *   List of theme suggestions.
+   * @param array $variables
+   *   List of variables from a preprocess hook.
+   *
+   * @return array
+   *   List of all theme suggestions.
+   */
+  public function themeSuggestion(array $suggestions, array $variables);
+
+  /**
    * Create a list of style configuration defaults.
    *
    * @return array

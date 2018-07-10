@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Implements hook_theme().
+ */
+function block_style_plugins_test_theme() {
+  return [
+    'block__test_custom' => [
+      'variables' => ['test_var' => NULL],
+    ],
+  ];
+}
