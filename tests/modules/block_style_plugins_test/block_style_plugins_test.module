@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * The Block Style Plugins Test module.
+ */
+
+/**
  * Implements hook_theme().
  */
 function block_style_plugins_test_theme() {

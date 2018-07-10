@@ -171,7 +171,7 @@ class BlockStyleTest extends UnitTestCase {
     $suggestions = [];
     $variables = ['elements' => ['#id' => 1]];
     $expected = [
-      'custom_template'
+      'custom_template',
     ];
 
     $return = $this->plugin->themeSuggestion($suggestions, $variables);
