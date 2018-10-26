@@ -57,6 +57,11 @@ interface BlockStyleInterface extends PluginInspectionInterface {
   /**
    * Adds block style specific submission handling for the block form.
    *
+   * When adding blocks via the Layout Builder, this method will be triggered
+   * during the validation handler. The component config must also be saved at
+   * this time. When extending the base class, always add the parent method at
+   * the end so that config will be properly saved.
+   *
    * @param array $form
    *   The form definition array for the full block configuration form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state

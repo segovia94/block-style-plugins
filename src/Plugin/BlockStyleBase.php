@@ -23,6 +23,13 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   protected $pluginId;
 
   /**
+   * Setting for whether the block is being used by the Layout Builder.
+   *
+   * @var bool
+   */
+  protected $layoutBuilder;
+
+  /**
    * Plugin instance for the Block being configured.
    *
    * @var object
@@ -98,11 +105,22 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    */
   public function prepareForm(array $form, FormStateInterface $form_state) {
     // Get the current block config entity.
-    /** @var \Drupal\block\Entity\Block $entity */
-    $entity = $form_state->getFormObject()->getEntity();
+    $form_object = $form_state->getFormObject();
 
-    // Set properties and configuration.
-    $this->blockPlugin = $entity->getPlugin();
+    // Check if this is the layout builder.
+    if ($form_object->getBaseFormId() == 'layout_builder_configure_block') {
+      $this->layoutBuilder = TRUE;
+      /** @var \Drupal\layout_builder\SectionComponent $component */
+      $component = $form_object->getCurrentComponent();
+      $this->blockPlugin = $component->getPlugin();
+    }
+    else {
+      /** @var \Drupal\block\Entity\Block $entity */
+      $entity = $form_state->getFormObject()->getEntity();
+      $this->blockPlugin = $entity->getPlugin();
+    }
+
+    // Determine if this is a a custom content block.
     $this->setBlockContentBundle();
 
     // Check to see if this should only apply to includes or if it has been
@@ -120,8 +138,17 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
         ];
       }
 
-      $styles = $entity->getThirdPartySetting('block_style_plugins', $this->pluginId);
-      $styles = is_array($styles) ? $styles : [];
+      $stored_styles = [];
+      if ($this->layoutBuilder) {
+        $block_styles = $component->get('third_party_settings');
+        if (!empty($block_styles['block_style_plugins'][$this->pluginId])) {
+          $stored_styles = $block_styles['block_style_plugins'][$this->pluginId];
+        }
+      }
+      else {
+        $stored_styles = $entity->getThirdPartySetting('block_style_plugins', $this->pluginId);
+      }
+      $styles = is_array($stored_styles) ? $stored_styles : [];
       $this->setStyles($styles);
 
       // Create containers to place each plugin style settings into the styles
@@ -140,8 +167,14 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
       // Allow plugins to alter this form.
       $form = $this->formAlter($form, $form_state);
 
-      // Add the submitForm method to the form.
-      array_unshift($form['actions']['submit']['#submit'], [$this, 'submitForm']);
+      // Add the submitForm handler to the form.
+      if ($this->layoutBuilder) {
+        // Submission happens in the validation for Layout Builder.
+        array_unshift($form['#validate'], [$this, 'submitForm']);
+      }
+      else {
+        array_unshift($form['actions']['submit']['#submit'], [$this, 'submitForm']);
+      }
     }
 
     return $form;
@@ -165,6 +198,13 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function submitForm($form, FormStateInterface $form_state) {
+    // Add a submit handler if this is using the Layout Builder.
+    if ($this->layoutBuilder) {
+      $form_object = $form_state->getFormObject();
+      $component = $form_object->getCurrentComponent();
+      $values = $form_state->getValue('third_party_settings');
+      $component->set('third_party_settings', $values);
+    }
     return NULL;
   }
 
@@ -287,15 +327,21 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    *   Return the styles array or FALSE
    */
   protected function getStylesFromVariables(array $variables) {
-    // Ensure that we have a block id.
-    if (empty($variables['elements']['#id'])) {
-      return FALSE;
-    }
+    $styles = [];
 
-    // Load the block config entity.
-    /** @var \Drupal\block\Entity\Block $block */
-    $block = $this->entityTypeManager->getStorage('block')->load($variables['elements']['#id']);
-    $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
+    // Ensure that we have a block id. If not, then the Layout Builder is used.
+    if (!empty($variables['elements']['#id'])) {
+      // Load the block config entity.
+      /** @var \Drupal\block\Entity\Block $block */
+      $block = $this->entityTypeManager->getStorage('block')->load($variables['elements']['#id']);
+      $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
+    }
+    else {
+      // Layout Builder: Get block styles from the configuration array.
+      if (!empty($variables['elements']['#configuration']['block_style_plugins'][$this->pluginId])) {
+        $styles = $variables['elements']['#configuration']['block_style_plugins'][$this->pluginId];
+      }
+    }
 
     if ($styles) {
       $this->setStyles($styles);
