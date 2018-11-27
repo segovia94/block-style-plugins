@@ -12,7 +12,7 @@ class BlockStyle extends BlockStyleBase {
   /**
    * {@inheritdoc}
    */
-  public function defaultStyles() {
+  public function defaultConfiguration() {
     $defaults = [];
     if (isset($this->pluginDefinition['form'])) {
       foreach ($this->pluginDefinition['form'] as $field => $setting) {
@@ -36,8 +36,8 @@ class BlockStyle extends BlockStyleBase {
       foreach ($setting as $property_key => $property) {
         $element[$property_key] = $property;
       }
-      if (isset($this->styles[$field])) {
-        $element['#default_value'] = $this->styles[$field];
+      if (isset($this->configuration[$field])) {
+        $element['#default_value'] = $this->configuration[$field];
       }
       $elements[$field] = $element;
     }

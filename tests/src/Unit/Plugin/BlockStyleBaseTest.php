@@ -144,7 +144,7 @@ class BlockStyleBaseTest extends UnitTestCase {
     $this->assertArrayHasKey('block_styles', $return);
 
     // Check that styles were set.
-    $styles = $this->plugin->getStyles();
+    $styles = $this->plugin->getConfiguration();
     $expected_styles = [
       'sample_class' => '',
       'sample_checkbox' => '',
@@ -161,16 +161,16 @@ class BlockStyleBaseTest extends UnitTestCase {
   }
 
   /**
-   * Tests the defaultStyles method.
+   * Tests the defaultConfiguration method.
    *
-   * @see ::defaultStyles()
+   * @see ::defaultConfiguration()
    */
-  public function testDefaultStyles() {
+  public function testDefaultConfiguration() {
     $expected = [
       'sample_class' => '',
       'sample_checkbox' => FALSE,
     ];
-    $default = $this->plugin->defaultStyles();
+    $default = $this->plugin->defaultConfiguration();
 
     $this->assertArrayEquals($expected, $default);
   }
@@ -280,27 +280,27 @@ class BlockStyleBaseTest extends UnitTestCase {
   }
 
   /**
-   * Tests the getStyles method.
+   * Tests the getConfiguration method.
    *
-   * @see ::getStyles()
+   * @see ::getConfiguration()
    */
-  public function testGetStyles() {
+  public function testGetConfiguration() {
     $expected = [
       'sample_class' => '',
       'sample_checkbox' => FALSE,
     ];
-    $this->plugin->setStyles([]);
-    $return = $this->plugin->getStyles();
+    $this->plugin->setConfiguration([]);
+    $return = $this->plugin->getConfiguration();
 
     $this->assertArrayEquals($expected, $return);
   }
 
   /**
-   * Tests the setStyles method.
+   * Tests the setConfiguration method.
    *
-   * @see ::setStyles()
+   * @see ::setConfiguration()
    */
-  public function testSetStyles() {
+  public function testSetConfiguration() {
     $expected = [
       'sample_class' => '',
       'sample_checkbox' => FALSE,
@@ -308,8 +308,8 @@ class BlockStyleBaseTest extends UnitTestCase {
     ];
 
     $new_styles = ['new_key' => 'new_val'];
-    $this->plugin->setStyles($new_styles);
-    $return = $this->plugin->getStyles();
+    $this->plugin->setConfiguration($new_styles);
+    $return = $this->plugin->getConfiguration();
 
     $this->assertArrayEquals($expected, $return);
 
@@ -319,8 +319,8 @@ class BlockStyleBaseTest extends UnitTestCase {
       'sample_checkbox' => TRUE,
     ];
 
-    $this->plugin->setStyles($expected);
-    $return = $this->plugin->getStyles();
+    $this->plugin->setConfiguration($expected);
+    $return = $this->plugin->getConfiguration();
 
     $this->assertArrayEquals($expected, $return);
   }

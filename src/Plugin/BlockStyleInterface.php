@@ -2,13 +2,14 @@
 
 namespace Drupal\block_style_plugins\Plugin;
 
+use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Defines an interface for Block style plugins.
  */
-interface BlockStyleInterface extends PluginInspectionInterface {
+interface BlockStyleInterface extends PluginInspectionInterface, ConfigurablePluginInterface {
 
   /**
    * Returns the configuration form elements specific to a block configuration.
@@ -109,29 +110,5 @@ interface BlockStyleInterface extends PluginInspectionInterface {
    *   List of all theme suggestions.
    */
   public function themeSuggestion(array $suggestions, array $variables);
-
-  /**
-   * Create a list of style configuration defaults.
-   *
-   * @return array
-   *   Return a list of all the default styles.
-   */
-  public function defaultStyles();
-
-  /**
-   * Sets the style configuration for this plugin instance.
-   *
-   * @param array $styles
-   *   A list of styles that need to be applied.
-   */
-  public function setStyles(array $styles);
-
-  /**
-   * Retrieve a list of style configuration.
-   *
-   * @return array
-   *   Return a list of all styles.
-   */
-  public function getStyles();
 
 }

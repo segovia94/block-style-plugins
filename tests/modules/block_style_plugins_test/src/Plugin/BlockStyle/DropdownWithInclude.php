@@ -25,7 +25,7 @@ class DropdownWithInclude extends BlockStyleBase {
   /**
    * {@inheritdoc}
    */
-  public function defaultStyles() {
+  public function defaultConfiguration() {
     // Default this to the third option.
     return ['dropdown_class' => 'style-3'];
   }
@@ -43,7 +43,7 @@ class DropdownWithInclude extends BlockStyleBase {
         'style-2' => $this->t('Style 2'),
         'style-3' => $this->t('Style 3'),
       ],
-      '#default_value' => $this->styles['dropdown_class'],
+      '#default_value' => $this->configuration['dropdown_class'],
     ];
 
     return $elements;

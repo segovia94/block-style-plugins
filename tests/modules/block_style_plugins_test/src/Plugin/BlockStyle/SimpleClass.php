@@ -18,7 +18,7 @@ class SimpleClass extends BlockStyleBase {
   /**
    * {@inheritdoc}
    */
-  public function defaultStyles() {
+  public function defaultConfiguration() {
     return ['simple_class' => ''];
   }
 
@@ -30,7 +30,7 @@ class SimpleClass extends BlockStyleBase {
       '#type' => 'textfield',
       '#title' => $this->t('Add a custom class to this block'),
       '#description' => $this->t('Do not add the "period" to the start of the class'),
-      '#default_value' => $this->styles['simple_class'],
+      '#default_value' => $this->configuration['simple_class'],
     ];
 
     return $elements;
