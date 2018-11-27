@@ -2,6 +2,7 @@
 
 namespace Drupal\block_style_plugins\Plugin;
 
+use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -99,6 +100,26 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   /**
    * {@inheritdoc}
    */
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+    // TODO: replace deprecated formElements() with an empty array before 8.x-2.x.
+    return $this->formElements($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function prepareForm(array $form, FormStateInterface $form_state) {
     // Get the current block config entity.
     /** @var \Drupal\block\Entity\Block $entity */
@@ -135,13 +156,14 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
       ];
 
       // Allow plugins to add field elements to this form.
-      $elements = $this->formElements($form, $form_state);
-      if ($elements) {
-        $form['third_party_settings']['block_style_plugins'][$this->pluginId] += $elements;
-      }
+      $subform_state = SubformState::createForSubform($form['third_party_settings']['block_style_plugins'][$this->pluginId], $form, $form_state);
+      $form['third_party_settings']['block_style_plugins'][$this->pluginId] += $this->buildConfigurationForm($form['third_party_settings']['block_style_plugins'][$this->pluginId], $subform_state);
 
       // Allow plugins to alter this form.
       $form = $this->formAlter($form, $form_state);
+
+      // Add form Validation.
+      $form['#validate'][] = [$this, 'validateForm'];
 
       // Add the submitForm method to the form.
       array_unshift($form['actions']['submit']['#submit'], [$this, 'submitForm']);
@@ -151,7 +173,10 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   }
 
   /**
-   * {@inheritdoc}
+   * Returns an array of field elements.
+   *
+   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
+   *   Instead, you should just use buildConfigurationForm().
    */
   public function formElements($form, FormStateInterface $form_state) {
     return [];
@@ -165,10 +190,28 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   }
 
   /**
+   * Adds block style specific validation handling for the block form.
+   *
+   * TODO: Add this to the BlockStyleInterface before 8.x-2.x.
+   *
+   * @param array $form
+   *   The form definition array for the full block configuration form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function validateForm(array $form, FormStateInterface $form_state) {
+    // Allow plugins to manipulate the validateForm.
+    $subform_state = SubformState::createForSubform($form['third_party_settings']['block_style_plugins'][$this->pluginId], $form, $form_state);
+    $this->validateConfigurationForm($form['third_party_settings']['block_style_plugins'][$this->pluginId], $subform_state);
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function submitForm($form, FormStateInterface $form_state) {
-    return NULL;
+    // Allow plugins to manipulate the submitForm.
+    $subform_state = SubformState::createForSubform($form['third_party_settings']['block_style_plugins'][$this->pluginId], $form, $form_state);
+    $this->submitConfigurationForm($form['third_party_settings']['block_style_plugins'][$this->pluginId], $subform_state);
   }
 
   /**

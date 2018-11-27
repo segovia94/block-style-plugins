@@ -176,13 +176,13 @@ class BlockStyleBaseTest extends UnitTestCase {
   }
 
   /**
-   * Tests the formElements method.
+   * Tests the buildConfigurationForm method.
    *
-   * @see ::formElements()
+   * @see ::buildConfigurationForm()
    */
-  public function testFormElements() {
+  public function testBuildConfigurationForm() {
     $form = [];
-    $return = $this->plugin->formElements($form, $this->formState->reveal());
+    $return = $this->plugin->buildConfigurationForm($form, $this->formState->reveal());
 
     $this->assertArrayEquals([], $return);
   }
@@ -200,12 +200,24 @@ class BlockStyleBaseTest extends UnitTestCase {
   }
 
   /**
+   * Tests the validateForm method.
+   *
+   * @see ::validateForm()
+   */
+  public function testValidateForm() {
+    $form = ['third_party_settings' => ['block_style_plugins' => [$this->plugin->getPluginId() => []]]];
+    $return = $this->plugin->validateForm($form, $this->formState->reveal());
+
+    $this->assertNull($return);
+  }
+
+  /**
    * Tests the submitForm method.
    *
    * @see ::submitForm()
    */
   public function testSubmitForm() {
-    $form = [];
+    $form = ['third_party_settings' => ['block_style_plugins' => [$this->plugin->getPluginId() => []]]];
     $return = $this->plugin->submitForm($form, $this->formState->reveal());
 
     $this->assertNull($return);

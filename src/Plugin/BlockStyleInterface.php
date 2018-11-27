@@ -5,11 +5,12 @@ namespace Drupal\block_style_plugins\Plugin;
 use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 
 /**
  * Defines an interface for Block style plugins.
  */
-interface BlockStyleInterface extends PluginInspectionInterface, ConfigurablePluginInterface {
+interface BlockStyleInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
 
   /**
    * Returns the configuration form elements specific to a block configuration.
@@ -26,21 +27,6 @@ interface BlockStyleInterface extends PluginInspectionInterface, ConfigurablePlu
    *   The renderable form array representing the entire configuration form.
    */
   public function prepareForm(array $form, FormStateInterface $form_state);
-
-  /**
-   * Returns an array of field elements.
-   *
-   * These form fields will be injected into the block configuration form.
-   *
-   * @param array $form
-   *   The form definition array for the block configuration form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   *
-   * @return array
-   *   A list of all form field elements that will allow setting styles.
-   */
-  public function formElements($form, FormStateInterface $form_state);
 
   /**
    * Returns a customized form array with new form settings for styles.
