@@ -129,6 +129,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function prepareForm(array $form, FormStateInterface $form_state) {
+    // Get the current block config entity.
     /** @var \Drupal\block\Entity\Block $entity */
     $entity = $form_state->getFormObject()->getEntity();
     $this->blockPlugin = $entity->getPlugin();
