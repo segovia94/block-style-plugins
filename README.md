@@ -71,7 +71,7 @@ proper plugin Annotations such as:
  */
 ```
 
-Override the `BlockStyleBase::formElements` method to extend the `$form` array
+Override the `BlockStyleBase::buildConfigurationForm` method to extend the `$form` array
 with your own custom style options using the
 [Form API](https://api.drupal.org/api/drupal/elements).
 

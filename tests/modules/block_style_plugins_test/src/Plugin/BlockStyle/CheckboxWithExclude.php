@@ -26,7 +26,7 @@ class CheckboxWithExclude extends BlockStyleBase {
   /**
    * {@inheritdoc}
    */
-  public function formElements($form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     // Checkboxes are do not apply a class automatically like other form
     // elements. Instead, they simply pass a boolean value that can be accessed
     // inside a Twig template like:
