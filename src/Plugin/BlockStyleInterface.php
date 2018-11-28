@@ -2,15 +2,13 @@
 
 namespace Drupal\block_style_plugins\Plugin;
 
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
-use Drupal\Component\Plugin\PluginInspectionInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\layout_builder\Plugin\BlockStyles\BlockStylesInterface;
 
 /**
  * Defines an interface for Block style plugins.
  */
-interface BlockStyleInterface extends PluginInspectionInterface, ConfigurablePluginInterface, PluginFormInterface {
+interface BlockStyleInterface extends BlockStylesInterface {
 
   /**
    * Returns the configuration form elements specific to a block configuration.

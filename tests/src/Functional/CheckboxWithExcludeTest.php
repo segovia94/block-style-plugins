@@ -17,7 +17,7 @@ class CheckboxWithExcludeTest extends BrowserTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = ['block_style_plugins', 'block_style_plugins_test'];
+  public static $modules = ['block_style_plugins', 'block_style_plugins_test', 'layout_builder'];
 
   /**
    * A user that can edit content types.

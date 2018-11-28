@@ -110,11 +110,11 @@ class BlockStyleTest extends UnitTestCase {
   }
 
   /**
-   * Tests the formElements method.
+   * Tests the buildConfigurationForm method.
    *
-   * @see ::formElements()
+   * @see ::buildConfigurationForm()
    */
-  public function testFormElements() {
+  public function testBuildConfigurationForm() {
     $expected = [
       'test_field' => [
         '#type' => 'textfield',
@@ -140,7 +140,7 @@ class BlockStyleTest extends UnitTestCase {
     $property->setValue($this->plugin, ['third_field' => 'user set value']);
 
     $form = [];
-    $return = $this->plugin->formElements($form, $this->formState->reveal());
+    $return = $this->plugin->buildConfigurationForm($form, $this->formState->reveal());
 
     $this->assertArrayEquals($expected, $return);
   }
