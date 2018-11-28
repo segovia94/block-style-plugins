@@ -79,11 +79,13 @@ A `block_styles` fieldset is automatically provided that can be used to do some
 automatic loading of values as classes onto the block attributes.
 
 ```
+$styles = $this->getConfiguration();
+
 $form['sample_class'] = array(
   '#type' => 'textfield',
   '#title' => $this->t('Add a custom class to this block'),
   '#description' => $this->t('Do not add the "period" to the start of the class'),
-  '#default_value' => $this->styles['sample_class'],
+  '#default_value' => $styles['sample_class'],
 );
 ```
 

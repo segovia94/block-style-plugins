@@ -19,7 +19,7 @@ class CheckboxWithExclude extends BlockStyleBase {
   /**
    * {@inheritdoc}
    */
-  public function defaultStyles() {
+  public function defaultConfiguration() {
     return ['checkbox_class' => ''];
   }
 
@@ -34,7 +34,7 @@ class CheckboxWithExclude extends BlockStyleBase {
     $elements['checkbox_class'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Check this box to pass a boolean to the theme'),
-      '#default_value' => $this->styles['checkbox_class'],
+      '#default_value' => $this->configuration['checkbox_class'],
     ];
 
     return $elements;
