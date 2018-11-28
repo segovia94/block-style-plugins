@@ -389,7 +389,10 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    */
   protected function getStylesFromVariables(array $variables) {
     // Ensure that we have a block id. If not, then the Layout Builder is used.
-    if (!empty($variables['elements']['#id'])) {
+    if (empty($variables['elements']['#id'])) {
+      $styles = $this->getConfiguration();
+    }
+    else {
       // Load the block config entity.
       /** @var \Drupal\block\Entity\Block $block */
       $block = $this->entityTypeManager->getStorage('block')
@@ -398,9 +401,6 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
       if ($styles) {
         $this->setConfiguration($styles);
       }
-    }
-    else {
-      $styles = $this->getConfiguration();
     }
 
     return $styles;
