@@ -52,16 +52,6 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   protected $entityTypeManager;
 
   /**
-   * Style settings for the block styles.
-   *
-   * @var array
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use $configuration.
-   */
-  protected $styles;
-
-  /**
    * Construct method for BlockStyleBase.
    *
    * @param array $configuration
@@ -101,8 +91,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    // TODO: replace deprecated formElements() with an empty array before 8.x-2.x.
-    return $this->formElements($form, $form_state);
+    return [];
   }
 
   /**
@@ -173,16 +162,6 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   }
 
   /**
-   * Returns an array of field elements.
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use buildConfigurationForm().
-   */
-  public function formElements($form, FormStateInterface $form_state) {
-    return [];
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function formAlter(array $form, FormStateInterface $form_state) {
@@ -208,7 +187,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   /**
    * {@inheritdoc}
    */
-  public function submitForm($form, FormStateInterface $form_state) {
+  public function submitForm(array $form, FormStateInterface $form_state) {
     // Allow plugins to manipulate the submitForm.
     $subform_state = SubformState::createForSubform($form['third_party_settings']['block_style_plugins'][$this->pluginId], $form, $form_state);
     $this->submitConfigurationForm($form['third_party_settings']['block_style_plugins'][$this->pluginId], $subform_state);
@@ -256,14 +235,10 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function setConfiguration(array $configuration) {
-    // TODO: Replace the deprecated defaultStyles() with defaultConfiguration() before 8.x-2.x.
     $this->configuration = NestedArray::mergeDeep(
-      $this->defaultStyles(),
+      $this->defaultConfiguration(),
       $configuration
     );
-    // Set the deprecated $styles property.
-    // TODO: Remove the deprecated $styles setting before 8.x-2.x.
-    $this->styles = $this->configuration;
   }
 
   /**
@@ -271,38 +246,6 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    */
   public function calculateDependencies() {
     return [];
-  }
-
-  /**
-   * Gets default style configuration for this plugin.
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use defaultConfiguration().
-   */
-  public function defaultStyles() {
-    return $this->defaultConfiguration();
-  }
-
-  /**
-   * Gets this plugin's style configuration.
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use getConfiguration().
-   */
-  public function getStyles() {
-    @trigger_error('::getStyles() is deprecated in 8.x-1.3 and will be removed before 8.x-2.x. Instead, you should just use getConfiguration(). See https://www.drupal.org/project/block_style_plugins/issues/3016288.', E_USER_DEPRECATED);
-    return $this->getConfiguration();
-  }
-
-  /**
-   * Sets the style configuration for this plugin instance.
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use setConfiguration().
-   */
-  public function setStyles(array $styles) {
-    @trigger_error('::setStyles() is deprecated in 8.x-1.3 and will be removed before 8.x-2.x. Instead, you should just use setConfiguration(). See https://www.drupal.org/project/block_style_plugins/issues/3016288.', E_USER_DEPRECATED);
-    $this->setConfiguration($styles);
   }
 
   /**

@@ -42,6 +42,16 @@ interface BlockStyleInterface extends PluginInspectionInterface, ConfigurablePlu
   public function formAlter(array $form, FormStateInterface $form_state);
 
   /**
+   * Adds block style specific validation handling for the block form.
+   *
+   * @param array $form
+   *   The form definition array for the full block configuration form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function validateForm(array $form, FormStateInterface $form_state);
+
+  /**
    * Adds block style specific submission handling for the block form.
    *
    * @param array $form
@@ -49,7 +59,7 @@ interface BlockStyleInterface extends PluginInspectionInterface, ConfigurablePlu
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public function submitForm($form, FormStateInterface $form_state);
+  public function submitForm(array $form, FormStateInterface $form_state);
 
   /**
    * Builds and returns the renderable array for this block style plugin.
