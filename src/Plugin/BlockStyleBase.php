@@ -104,6 +104,13 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    // Set configuration if this is the Layout Builder.
+    if (isset($form['#form_id']) && $form['#form_id'] == 'block_style_plugins_layout_builder_configure_styles') {
+      $values = $form_state->getValues();
+      if ($values) {
+        $this->setConfiguration($values);
+      }
+    }
   }
 
   /**
@@ -210,7 +217,14 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
           continue;
         }
 
-        $variables['attributes']['class'][] = $class;
+        // Ensure that we have a block id. If not, the Layout Builder is used.
+        if (!empty($variables['elements']['#id'])) {
+          $variables['attributes']['class'][] = $class;
+        }
+        else {
+          // Layout Builder needs a "#".
+          $variables['#attributes']['class'][] = $class;
+        }
       }
     }
 
@@ -317,23 +331,28 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    *   Return the styles array or FALSE
    */
   protected function getStylesFromVariables(array $variables) {
-    // Ensure that we have a block id.
+    // Ensure that we have a block id. If not, then the Layout Builder is used.
     if (empty($variables['elements']['#id'])) {
-      return FALSE;
-    }
+      $styles = $this->getConfiguration();
 
-    // Load the block config entity.
-    /** @var \Drupal\block\Entity\Block $block */
-    $block = $this->entityTypeManager->getStorage('block')->load($variables['elements']['#id']);
-    $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
-
-    if ($styles) {
-      $this->setConfiguration($styles);
-      return $styles;
+      // Style config might not be set if this is happening in a hook so we will
+      // check if a block_styles variable is set and get the config.
+      if (empty($styles) && isset($variables['elements']['block_styles'])) {
+        $this->setConfiguration($variables['elements']['block_styles']);
+        $styles = $styles = $this->getConfiguration();
+      }
     }
     else {
-      return FALSE;
+      // Load the block config entity.
+      /** @var \Drupal\block\Entity\Block $block */
+      $block = $this->entityTypeManager->getStorage('block')
+        ->load($variables['elements']['#id']);
+      $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
+      if ($styles) {
+        $this->setConfiguration($styles);
+      }
     }
+    return $styles;
   }
 
 }

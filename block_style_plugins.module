@@ -46,6 +46,11 @@ function block_style_plugins_form_block_form_alter(&$form, FormStateInterface $f
  * Implements hook_preprocess_block().
  */
 function block_style_plugins_preprocess_block(&$variables) {
+  // Exit if this is a layout builder block since everything is already set.
+  if (empty($variables['elements']['#id'])) {
+    return $variables;
+  }
+
   // Retrieve a list of style plugin definitions.
   /** @var Drupal\block_style_plugins\Plugin\BlockStyleManager $plugin_manager */
   $plugin_manager = \Drupal::service('plugin.manager.block_style.processor');
