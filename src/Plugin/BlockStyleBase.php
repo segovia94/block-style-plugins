@@ -337,8 +337,8 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
 
       // Style config might not be set if this is happening in a hook so we will
       // check if a block_styles variable is set and get the config.
-      if (empty($styles) && isset($variables['elements']['block_styles'])) {
-        $this->setConfiguration($variables['elements']['block_styles']);
+      if (empty($styles) && isset($variables['elements']['block_styles'][$this->pluginId])) {
+        $this->setConfiguration($variables['elements']['block_styles'][$this->pluginId]);
         $styles = $styles = $this->getConfiguration();
       }
     }
