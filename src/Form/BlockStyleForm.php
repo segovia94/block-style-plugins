@@ -119,13 +119,16 @@ class BlockStyleForm extends FormBase {
       // Create links to edit and delete.
       $links = [
         'edit' => [
-          'title' => $this->t('Edit'),
-          'url' => Url::fromRoute('block_style_plugins.layout_builder.add_styles', $this->getParameters($style_id), $options),
+          '#title' => $this->t('Edit'),
+          '#type' => 'link',
+          '#url' => Url::fromRoute('block_style_plugins.layout_builder.add_styles', $this->getParameters($style_id), $options),
         ],
         'delete' => [
-          'title' => $this->t('Delete'),
-          'url' => Url::fromRoute('block_style_plugins.layout_builder.delete_styles', $this->getParameters($style_id), $options),
+          '#title' => $this->t('Delete'),
+          '#type' => 'link',
+          '#url' => Url::fromRoute('block_style_plugins.layout_builder.delete_styles', $this->getParameters($style_id), $options),
         ],
+        '#attributes' => ['class' => 'operations'],
       ];
 
       // If there is no plugin for the set block style then we should only allow
@@ -138,10 +141,7 @@ class BlockStyleForm extends FormBase {
 
       $items[] = [
         ['#markup' => $plugin_label],
-        [
-          '#type' => 'operations',
-          '#links' => $links,
-        ],
+        $links,
       ];
     }
     if ($items) {
@@ -154,6 +154,7 @@ class BlockStyleForm extends FormBase {
         '#theme' => 'item_list',
         '#items' => $items,
         '#empty' => $this->t('No styles have been set.'),
+        '#attached' => ['library' => ['block_style_plugins/off_canvas']]
       ];
     }
 
