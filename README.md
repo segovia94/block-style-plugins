@@ -5,6 +5,10 @@ options to block configuration by creating a custom plugin. It is advisable to
 do this primarily in themes since the majority of styles should be specific to a
 theme.
 
+The new core Layout Builder is supported and will offer a new contextual link for
+"Style settings". This way your styles will work for blocks regardless as to
+whether you place them via the new Layout Builder or the traditional Blocks UI.
+
 **Tutorial Video:** [https://youtu.be/Y0t8owlV2_4](https://youtu.be/Y0t8owlV2_4) 
 
 ### Dependencies
@@ -37,6 +41,12 @@ nested.
 
 By adding a `template` you may specify a template theme suggestion of your
 choosing for the block.
+
+By default, each field value will be set as a CSS class on the block. The one
+exception will be checkboxes. The checkbox data is passed along (with other
+style data) to the theme layer and can be accessed in a preprocess function at
+`$variables['configuration']['block_styles']` or in a Twig template at
+`{{ configuration.block_styles }}`
 
 ### Example Plugins
 
@@ -71,12 +81,9 @@ proper plugin Annotations such as:
  */
 ```
 
-Override the `BlockStyleBase::buildConfigurationForm` method to extend the `$form` array
-with your own custom style options using the
+Override the `BlockStyleBase::buildConfigurationForm` method to extend the
+`$form` array with your own custom style options using the
 [Form API](https://api.drupal.org/api/drupal/elements).
-
-A `block_styles` fieldset is automatically provided that can be used to do some
-automatic loading of values as classes onto the block attributes.
 
 ```
 $styles = $this->getConfiguration();
@@ -134,20 +141,26 @@ sample_block_style:
     - 'block_plugin_id'
 ```
 
+### Match all derivatives of a base plugin id
+
+You can also match any derivatives of a base plugin id by adding `:*` such as
+`system_menu_block:*` which will match all derivatives of the menu blocks such
+as `system_menu_block:main`.
+
 ### How to discover a 'block plugin id'
 
 It might be frustrating at first trying to figure out how to get a block's
 plugin id. In a theme's `themename.theme` file just preprocess a block. One of
-the variables available is the `base_plugin_id`.
+the variables available is the `plugin_id`.
 
 ```php
 /**
  * Implements hook_preprocess_block().
  */
 function themename_preprocess_block(array &$variables) {
-  // Get the base plugin id
-  $base_plugin_id = $variables['base_plugin_id'];
-  print '<pre>' . $base_plugin_id . '</pre>';
+  // Get the plugin id.
+  $plugin_id = $variables['plugin_id'];
+  print '<pre>' . $plugin_id . '</pre>';
 }
 ```
 

@@ -49,9 +49,10 @@ trait IncludeExcludeStyleTrait {
       $list = $plugin_definition['exclude'];
     }
 
-    if (!empty($list) && (in_array($plugin_id, $list))) {
+    if (!empty($list) && $this->matchPattern($plugin_id, $list)) {
       return TRUE;
     }
+
     return FALSE;
   }
 
@@ -77,7 +78,39 @@ trait IncludeExcludeStyleTrait {
       $list = $plugin_definition['include'];
     }
 
-    if (empty($list) || (in_array($plugin_id, $list))) {
+    if (empty($list) || $this->matchPattern($plugin_id, $list)) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Match a plugin ID against a list of possible plugin IDs.
+   *
+   * @param string $plugin_id
+   *   The ID of the block being checked.
+   * @param array $plugin_list
+   *   List of plugin ids or plugin patterns of "plugin_id:*".
+   *
+   * @return bool
+   *   Return TRUE if the plugin ID matches a Plugin ID or pattern in the list.
+   */
+  protected function matchPattern($plugin_id, array $plugin_list) {
+    // First check to see if the id is already directly in the list.
+    if (in_array($plugin_id, $plugin_list)) {
+      return TRUE;
+    }
+
+    // Now check to see if this ID is a derivative on something in the list.
+    preg_match('/^([^:]+):?/', $plugin_id, $matches);
+    if ($matches && in_array($matches[1] . ':*', $plugin_list)) {
+      return TRUE;
+    }
+
+    // Match any inline blocks in Layout Builder.
+    preg_match('/^inline_block:(.+)/', $plugin_id, $matches);
+    if ($matches && in_array($matches[1], $plugin_list)) {
       return TRUE;
     }
 
