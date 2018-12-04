@@ -5,6 +5,7 @@ namespace Drupal\block_style_plugins\Form;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\OpenOffCanvasDialogCommand;
 use Drupal\Core\Form\ConfirmFormBase;
+use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\layout_builder\LayoutTempstoreRepositoryInterface;
@@ -24,6 +25,13 @@ class DeleteStyles extends ConfirmFormBase {
    * @var \Drupal\layout_builder\LayoutTempstoreRepositoryInterface
    */
   protected $layoutTempstoreRepository;
+
+  /**
+   * The form builder.
+   *
+   * @var \Drupal\Core\Form\FormBuilderInterface
+   */
+  protected $formBuilder;
 
   /**
    * The section storage.
@@ -57,10 +65,13 @@ class DeleteStyles extends ConfirmFormBase {
   /**
    * Constructs a DeleteStyles object.
    *
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The form builder.
    * @param \Drupal\layout_builder\LayoutTempstoreRepositoryInterface $layout_tempstore_repository
    *   The layout tempstore repository.
    */
-  public function __construct(LayoutTempstoreRepositoryInterface $layout_tempstore_repository) {
+  public function __construct(FormBuilderInterface $form_builder, LayoutTempstoreRepositoryInterface $layout_tempstore_repository) {
+    $this->formBuilder = $form_builder;
     $this->layoutTempstoreRepository = $layout_tempstore_repository;
   }
 
@@ -69,6 +80,7 @@ class DeleteStyles extends ConfirmFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
+      $container->get('form_builder'),
       $container->get('layout_builder.tempstore_repository')
     );
   }
@@ -139,7 +151,7 @@ class DeleteStyles extends ConfirmFormBase {
    */
   public function ajaxCancel(array &$form, FormStateInterface $form_state) {
     $parameters = $this->getParameters();
-    $new_form = \Drupal::formBuilder()->getForm('\Drupal\block_style_plugins\Form\BlockStyleForm', $this->sectionStorage, $parameters['delta'], $parameters['uuid']);
+    $new_form = $this->formBuilder->getForm('\Drupal\block_style_plugins\Form\BlockStyleForm', $this->sectionStorage, $parameters['delta'], $parameters['uuid']);
     $new_form['#action'] = $this->getCancelUrl()->toString();
     $response = new AjaxResponse();
     $response->addCommand(new OpenOffCanvasDialogCommand($this->t('Configure Styles'), $new_form));
