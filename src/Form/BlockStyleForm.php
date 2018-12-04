@@ -7,6 +7,7 @@ use Drupal\block_style_plugins\IncludeExcludeStyleTrait;
 use Drupal\Core\Ajax\AjaxFormHelperTrait;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\OpenOffCanvasDialogCommand;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -40,6 +41,13 @@ class BlockStyleForm extends FormBase {
   protected $formBuilder;
 
   /**
+   * Instance of the Entity Repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
    * The section storage.
    *
    * @var \Drupal\layout_builder\SectionStorageInterface
@@ -67,10 +75,13 @@ class BlockStyleForm extends FormBase {
    *   The form builder.
    * @param \Drupal\block_style_plugins\Plugin\BlockStyleManager $blockStyleManager
    *   The Block Style Manager.
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entityRepository
+   *   An Entity Repository instance.
    */
-  public function __construct(FormBuilderInterface $form_builder, BlockStyleManager $blockStyleManager) {
+  public function __construct(FormBuilderInterface $form_builder, BlockStyleManager $blockStyleManager, EntityRepositoryInterface $entityRepository) {
     $this->formBuilder = $form_builder;
     $this->blockStyleManager = $blockStyleManager;
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -79,7 +90,8 @@ class BlockStyleForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('form_builder'),
-      $container->get('plugin.manager.block_style.processor')
+      $container->get('plugin.manager.block_style.processor'),
+      $container->get('entity.repository')
     );
   }
 
@@ -101,12 +113,24 @@ class BlockStyleForm extends FormBase {
     $component = $block_styles = $section_storage->getSection($delta)->getComponent($uuid);
     $block_styles = $component->get('block_styles');
 
+    // Get the component/block ID and then replace it with a block_content_type
+    // if this is a reusable "block_content" block.
+    $block_id = $component->getPluginId();
+    preg_match('/^block_content:(.+)/', $block_id, $matches);
+    if ($matches) {
+      $plugin = $this->entityRepository->loadEntityByUuid('block_content', $matches[1]);
+
+      if ($plugin) {
+        $block_id = $plugin->bundle();
+      }
+    }
+
     // Retrieve a list of style plugin definitions.
     $style_plugins = [];
     foreach ($this->blockStyleManager->getDefinitions() as $plugin_id => $definition) {
       // Check to see if this should only apply to includes or if it has been
       // excluded.
-      if ($this->allowStyles($component->getPluginId(), $definition)) {
+      if ($this->allowStyles($block_id, $definition)) {
         $style_plugins[$plugin_id] = $definition['label'];
       }
     }
