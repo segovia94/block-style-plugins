@@ -213,11 +213,21 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function build(array $variables) {
+    // Is the Layout Builder being used?
+    $layout_builder = (empty($variables['elements']['#id'])) ? TRUE : FALSE;
+
     $styles = $this->getStylesFromVariables($variables);
 
     if ($styles) {
-      // Add all styles config to the $variables array.
-      $variables['block_styles'][$this->pluginId] = $styles;
+      // Add styles to the configuration array so that they can be accessed in a
+      // preprocess $variables['configuration']['block_styles'] or in a twig
+      // template as {{ configuration.block_styles.plugin_id.field_name }}.
+      if ($layout_builder) {
+        $variables['#configuration']['block_styles'][$this->pluginId] = $styles;
+      }
+      else {
+        $variables['configuration']['block_styles'][$this->pluginId] = $styles;
+      }
 
       // Add each style value as a class.
       foreach ($styles as $class) {
@@ -227,12 +237,12 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
         }
 
         // Ensure that we have a block id. If not, the Layout Builder is used.
-        if (!empty($variables['elements']['#id'])) {
-          $variables['attributes']['class'][] = $class;
-        }
-        else {
+        if ($layout_builder) {
           // Layout Builder needs a "#".
           $variables['#attributes']['class'][] = $class;
+        }
+        else {
+          $variables['attributes']['class'][] = $class;
         }
       }
     }
@@ -310,8 +320,8 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
 
       // Style config might not be set if this is happening in a hook so we will
       // check if a block_styles variable is set and get the config.
-      if (empty($styles) && isset($variables['elements']['block_styles'][$this->pluginId])) {
-        $this->setConfiguration($variables['elements']['block_styles'][$this->pluginId]);
+      if (empty($styles) && isset($variables['elements']['#configuration']['block_styles'][$this->pluginId])) {
+        $this->setConfiguration($variables['elements']['#configuration']['block_styles'][$this->pluginId]);
         $styles = $styles = $this->getConfiguration();
       }
     }

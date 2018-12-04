@@ -50,10 +50,6 @@ class SectionComponentStyles implements EventSubscriberInterface {
     if ($block_styles) {
       $build = $event->getBuild();
 
-      // Add styles to the configuration array so that they can be accessed in a
-      // preprocess $variables['configuration']['block_styles'].
-      $build['#configuration']['block_styles'] = $block_styles;
-
       // Look for all available plugins.
       $available_plugins = $this->blockStyleManager->getDefinitions();
 

@@ -257,8 +257,10 @@ class BlockStyleBaseTest extends UnitTestCase {
     $variables = ['elements' => ['#id' => 1]];
     $expected = [
       'elements' => ['#id' => 1],
-      'block_styles' => [
-        'block_style_plugins' => ['class1', 'class2'],
+      'configuration' => [
+        'block_styles' => [
+          'block_style_plugins' => ['class1', 'class2'],
+        ],
       ],
       'attributes' => [
         'class' => [
@@ -277,8 +279,10 @@ class BlockStyleBaseTest extends UnitTestCase {
     $variables = ['elements' => ['#id' => 1]];
     $expected = [
       'elements' => ['#id' => 1],
-      'block_styles' => [
-        'block_style_plugins' => ['class1', 1, 'class2', 0],
+      'configuration' => [
+        'block_styles' => [
+          'block_style_plugins' => ['class1', 1, 'class2', 0],
+        ],
       ],
       'attributes' => [
         'class' => [
