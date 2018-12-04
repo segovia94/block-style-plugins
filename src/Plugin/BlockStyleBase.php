@@ -2,6 +2,7 @@
 
 namespace Drupal\block_style_plugins\Plugin;
 
+use Drupal\block_style_plugins\IncludeExcludeStyleTrait;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -15,6 +16,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
  * Base class for Block style plugins.
  */
 abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface, ContainerFactoryPluginInterface {
+
+  use IncludeExcludeStyleTrait;
 
   /**
    * Plugin ID for the Block being configured.
@@ -125,9 +128,15 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
     $this->blockPlugin = $entity->getPlugin();
     $this->setBlockContentBundle();
 
+    // Find the plugin ID or block content bundle id.
+    $plugin_id = $this->blockPlugin->getPluginId();
+    if ($this->blockContentBundle) {
+      $plugin_id = $this->blockContentBundle;
+    }
+
     // Check to see if this should only apply to includes or if it has been
     // excluded.
-    if ($this->includeOnly() && !$this->exclude()) {
+    if ($this->allowStyles($plugin_id, $this->pluginDefinition)) {
 
       // Create a fieldset to contain style fields.
       if (!isset($form['block_styles'])) {
@@ -260,42 +269,6 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    */
   public function calculateDependencies() {
     return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function exclude() {
-    $list = [];
-
-    if (isset($this->pluginDefinition['exclude'])) {
-      $list = $this->pluginDefinition['exclude'];
-    }
-
-    $block_plugin_id = $this->blockPlugin->getPluginId();
-
-    if (!empty($list) && (in_array($block_plugin_id, $list) || in_array($this->blockContentBundle, $list))) {
-      return TRUE;
-    }
-    return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function includeOnly() {
-    $list = [];
-
-    if (isset($this->pluginDefinition['include'])) {
-      $list = $this->pluginDefinition['include'];
-    }
-
-    $block_plugin_id = $this->blockPlugin->getPluginId();
-
-    if (empty($list) || (in_array($block_plugin_id, $list) || in_array($this->blockContentBundle, $list))) {
-      return TRUE;
-    }
-    return FALSE;
   }
 
   /**

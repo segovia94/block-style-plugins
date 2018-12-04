@@ -73,28 +73,6 @@ interface BlockStyleInterface extends PluginInspectionInterface, ConfigurablePlu
   public function build(array $variables);
 
   /**
-   * Exclude styles from appearing on a block.
-   *
-   * Determine if configuration should be excluded from certain blocks when a
-   * block plugin id or block content type is passed from a plugin.
-   *
-   * @return bool
-   *   Return True if the current block should not get the styles.
-   */
-  public function exclude();
-
-  /**
-   * Only show styles on specific blocks.
-   *
-   * Determine if configuration should be only included on certain blocks when a
-   * block plugin id or block content type is passed from a plugin.
-   *
-   * @return bool
-   *   Return True if the current block should only get the styles.
-   */
-  public function includeOnly();
-
-  /**
    * Add theme suggestions for the block.
    *
    * @param array $suggestions

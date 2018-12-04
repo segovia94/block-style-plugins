@@ -3,6 +3,7 @@
 namespace Drupal\block_style_plugins\Form;
 
 use Drupal\block_style_plugins\Plugin\BlockStyleManager;
+use Drupal\block_style_plugins\IncludeExcludeStyleTrait;
 use Drupal\Core\Ajax\AjaxFormHelperTrait;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\OpenOffCanvasDialogCommand;
@@ -22,6 +23,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 class BlockStyleForm extends FormBase {
 
   use AjaxFormHelperTrait;
+  use IncludeExcludeStyleTrait;
 
   /**
    * The Block Styles Manager.
@@ -96,12 +98,17 @@ class BlockStyleForm extends FormBase {
     $this->delta = $delta;
     $this->uuid = $uuid;
 
-    $block_styles = $section_storage->getSection($delta)->getComponent($uuid)->get('block_styles');
+    $component = $block_styles = $section_storage->getSection($delta)->getComponent($uuid);
+    $block_styles = $component->get('block_styles');
 
     // Retrieve a list of style plugin definitions.
     $style_plugins = [];
     foreach ($this->blockStyleManager->getDefinitions() as $plugin_id => $definition) {
-      $style_plugins[$plugin_id] = $definition['label'];
+      // Check to see if this should only apply to includes or if it has been
+      // excluded.
+      if ($this->allowStyles($component->getPluginId(), $definition)) {
+        $style_plugins[$plugin_id] = $definition['label'];
+      }
     }
 
     // Create a list of applied styles with operation links.

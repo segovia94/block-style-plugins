@@ -338,23 +338,56 @@ class BlockStyleBaseTest extends UnitTestCase {
   }
 
   /**
+   * Tests the allowStyles method.
+   *
+   * @see ::allowStyles()
+   *
+   * @dataProvider allowStylesProvider
+   */
+  public function testAllowStyles($type, $plugin, $expected) {
+    $plugin_definition = [];
+
+    if ($plugin) {
+      $plugin_definition = [$type => [$plugin]];
+    }
+
+    $return = $this->plugin->allowStyles('basic_block', $plugin_definition);
+    $this->assertEquals($expected, $return);
+  }
+
+  /**
+   * Provider for testAllowStyles()
+   */
+  public function allowStylesProvider() {
+    return [
+      'No include options are passed' => [NULL, NULL, TRUE],
+      'Include basic_block' => ['include', 'basic_block', TRUE],
+      'Include only a sample_block' => ['include', 'wrong_block', FALSE],
+      'No exclude options are passed' => [NULL, NULL, TRUE],
+      'Exclude basic_block' => ['exclude', 'basic_block', FALSE],
+      'Exclude a block that is not the current one' => [
+        'exclude',
+        'wrong_block',
+        TRUE,
+      ],
+    ];
+  }
+
+  /**
    * Tests the exclude method.
    *
    * @see ::exclude()
    *
    * @dataProvider excludeProvider
    */
-  public function testExclude($plugin, $bundle, $expected) {
-    // Stub the blockPlugin.
-    $this->setProtectedProperty('blockPlugin', $this->blockPlugin->reveal());
+  public function testExclude($plugin_id, $expected) {
+    $plugin_definition = [];
 
-    if ($plugin) {
-      $this->setProtectedProperty('pluginDefinition', ['exclude' => [$plugin]]);
+    if ($plugin_id) {
+      $plugin_definition = ['exclude' => [$plugin_id]];
     }
-    if ($bundle) {
-      $this->setProtectedProperty('blockContentBundle', $bundle);
-    }
-    $return = $this->plugin->exclude();
+
+    $return = $this->plugin->exclude('basic_block', $plugin_definition);
     $this->assertEquals($expected, $return);
   }
 
@@ -363,21 +396,10 @@ class BlockStyleBaseTest extends UnitTestCase {
    */
   public function excludeProvider() {
     return [
-      'No exclude options are passed' => [FALSE, NULL, FALSE],
-      'Exclude basic_block' => ['basic_block', NULL, TRUE],
+      'No exclude options are passed' => [FALSE, FALSE],
+      'Exclude basic_block' => ['basic_block', TRUE],
       'Exclude a block that is not the current one' => [
         'wrong_block',
-        NULL,
-        FALSE,
-      ],
-      'Exclude a custom content block' => [
-        'custom_block',
-        'custom_block',
-        TRUE,
-      ],
-      'Exclude a custom content block that is not the current block' => [
-        'wrong_custom_block',
-        'custom_block',
         FALSE,
       ],
     ];
@@ -390,17 +412,14 @@ class BlockStyleBaseTest extends UnitTestCase {
    *
    * @dataProvider includeOnlyProvider
    */
-  public function testIncludeOnly($plugin, $bundle, $expected) {
-    // Stub the blockPlugin.
-    $this->setProtectedProperty('blockPlugin', $this->blockPlugin->reveal());
+  public function testIncludeOnly($plugin_id, $expected) {
+    $plugin_definition = [];
 
-    if ($plugin) {
-      $this->setProtectedProperty('pluginDefinition', ['include' => [$plugin]]);
+    if ($plugin_id) {
+      $plugin_definition = ['include' => [$plugin_id]];
     }
-    if ($bundle) {
-      $this->setProtectedProperty('blockContentBundle', $bundle);
-    }
-    $return = $this->plugin->includeOnly();
+
+    $return = $this->plugin->includeOnly('basic_block', $plugin_definition);
     $this->assertEquals($expected, $return);
   }
 
@@ -409,19 +428,9 @@ class BlockStyleBaseTest extends UnitTestCase {
    */
   public function includeOnlyProvider() {
     return [
-      'No include options are passed' => [NULL, NULL, TRUE],
-      'Include basic_block' => ['basic_block', NULL, TRUE],
-      'Include only a sample_block' => ['wrong_block', NULL, FALSE],
-      'Include a custom content block' => [
-        'custom_block',
-        'custom_block',
-        TRUE,
-      ],
-      'Include a custom content block which is not the current one' => [
-        'wrong_custom_block',
-        'custom_block',
-        FALSE,
-      ],
+      'No include options are passed' => [NULL, TRUE],
+      'Include basic_block' => ['basic_block', TRUE],
+      'Include only a sample_block' => ['wrong_block', FALSE],
     ];
   }
 
