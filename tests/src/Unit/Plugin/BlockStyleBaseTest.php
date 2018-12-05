@@ -104,8 +104,10 @@ class BlockStyleBaseTest extends UnitTestCase {
     $plugin_definition['provider'] = 'block_style_plugins';
 
     $container = $this->prophesize(ContainerInterface::CLASS);
-    $container->get('entity.repository')->willReturn($this->entityRepository->reveal());
-    $container->get('entity_type.manager')->willReturn($this->entityTypeManager->reveal());
+    $container->get('entity.repository')
+      ->willReturn($this->entityRepository->reveal());
+    $container->get('entity_type.manager')
+      ->willReturn($this->entityTypeManager->reveal());
 
     $instance = MockBlockStyleBase::create(
       $container->reveal(),
@@ -124,7 +126,8 @@ class BlockStyleBaseTest extends UnitTestCase {
   public function testPrepareForm() {
     $block = $this->prophesize(Block::CLASS);
     $block->getPlugin()->willReturn($this->blockPlugin->reveal());
-    $block->getThirdPartySetting('block_style_plugins', 'block_style_plugins')->willReturn(['test_style' => TRUE]);
+    $block->getThirdPartySetting('block_style_plugins', 'block_style_plugins')
+      ->willReturn(['test_style' => TRUE]);
 
     $blockForm = $this->prophesize(BlockForm::CLASS);
     $blockForm->getEntity()->willReturn($block->reveal());
@@ -235,7 +238,8 @@ class BlockStyleBaseTest extends UnitTestCase {
     $storage = $this->prophesize(EntityStorageInterface::CLASS);
     $storage->load(1)->willReturn($block->reveal());
 
-    $this->entityTypeManager->getStorage('block')->willReturn($storage->reveal());
+    $this->entityTypeManager->getStorage('block')
+      ->willReturn($storage->reveal());
 
     // No element ID is passed through the variables.
     $variables = [];
@@ -257,8 +261,10 @@ class BlockStyleBaseTest extends UnitTestCase {
     $variables = ['elements' => ['#id' => 1]];
     $expected = [
       'elements' => ['#id' => 1],
-      'block_styles' => [
-        'block_style_plugins' => ['class1', 'class2'],
+      'configuration' => [
+        'block_styles' => [
+          'block_style_plugins' => ['class1', 'class2'],
+        ],
       ],
       'attributes' => [
         'class' => [
@@ -277,8 +283,10 @@ class BlockStyleBaseTest extends UnitTestCase {
     $variables = ['elements' => ['#id' => 1]];
     $expected = [
       'elements' => ['#id' => 1],
-      'block_styles' => [
-        'block_style_plugins' => ['class1', 1, 'class2', 0],
+      'configuration' => [
+        'block_styles' => [
+          'block_style_plugins' => ['class1', 1, 'class2', 0],
+        ],
       ],
       'attributes' => [
         'class' => [
@@ -338,23 +346,90 @@ class BlockStyleBaseTest extends UnitTestCase {
   }
 
   /**
+   * Tests the allowStyles method.
+   *
+   * @see ::allowStyles()
+   *
+   * @dataProvider allowStylesProvider
+   */
+  public function testAllowStyles($type, $plugin, $expected) {
+    $plugin_definition = [];
+
+    if ($plugin) {
+      $plugin_definition = [$type => [$plugin]];
+    }
+
+    $return = $this->plugin->allowStyles('basic_block', $plugin_definition);
+    $this->assertEquals($expected, $return);
+  }
+
+  /**
+   * Provider for testAllowStyles()
+   */
+  public function allowStylesProvider() {
+    return [
+      'No include options are passed' => [NULL, NULL, TRUE],
+      'Include basic_block' => ['include', 'basic_block', TRUE],
+      'Include only a sample_block' => ['include', 'wrong_block', FALSE],
+      'Include all derivatives of a base_plugin_id' => [
+        'include',
+        'basic_block:*',
+        TRUE,
+      ],
+      'No exclude options are passed' => [NULL, NULL, TRUE],
+      'Exclude basic_block' => ['exclude', 'basic_block', FALSE],
+      'Exclude a block that is not the current one' => [
+        'exclude',
+        'wrong_block',
+        TRUE,
+      ],
+      'Exclude all derivatives of a base_plugin_id' => [
+        'exclude',
+        'basic_block:*',
+        FALSE,
+      ],
+    ];
+  }
+
+  /**
+   * Tests the allowStyles method with Derivatives.
+   *
+   * @see ::allowStyles()
+   */
+  public function testAllowStylesDerivatives() {
+    $plugin_definition = ['exclude' => ['system_menu_block:*']];
+
+    $return = $this->plugin->allowStyles('system_menu_block:main', $plugin_definition);
+    $this->assertFalse($return);
+  }
+
+  /**
+   * Tests the allowStyles method with Layout Builder's Inline Blocks.
+   *
+   * @see ::allowStyles()
+   */
+  public function testAllowStylesInlineBlocks() {
+    $plugin_definition = ['exclude' => ['block_type']];
+
+    $return = $this->plugin->allowStyles('inline_block:block_type', $plugin_definition);
+    $this->assertFalse($return);
+  }
+
+  /**
    * Tests the exclude method.
    *
    * @see ::exclude()
    *
    * @dataProvider excludeProvider
    */
-  public function testExclude($plugin, $bundle, $expected) {
-    // Stub the blockPlugin.
-    $this->setProtectedProperty('blockPlugin', $this->blockPlugin->reveal());
+  public function testExclude($plugin_id, $expected) {
+    $plugin_definition = [];
 
-    if ($plugin) {
-      $this->setProtectedProperty('pluginDefinition', ['exclude' => [$plugin]]);
+    if ($plugin_id) {
+      $plugin_definition = ['exclude' => [$plugin_id]];
     }
-    if ($bundle) {
-      $this->setProtectedProperty('blockContentBundle', $bundle);
-    }
-    $return = $this->plugin->exclude();
+
+    $return = $this->plugin->exclude('basic_block', $plugin_definition);
     $this->assertEquals($expected, $return);
   }
 
@@ -363,23 +438,13 @@ class BlockStyleBaseTest extends UnitTestCase {
    */
   public function excludeProvider() {
     return [
-      'No exclude options are passed' => [FALSE, NULL, FALSE],
-      'Exclude basic_block' => ['basic_block', NULL, TRUE],
+      'No exclude options are passed' => [FALSE, FALSE],
+      'Exclude basic_block' => ['basic_block', TRUE],
       'Exclude a block that is not the current one' => [
         'wrong_block',
-        NULL,
         FALSE,
       ],
-      'Exclude a custom content block' => [
-        'custom_block',
-        'custom_block',
-        TRUE,
-      ],
-      'Exclude a custom content block that is not the current block' => [
-        'wrong_custom_block',
-        'custom_block',
-        FALSE,
-      ],
+      'Exclude all derivatives of a base_plugin_id' => ['basic_block:*', TRUE],
     ];
   }
 
@@ -390,17 +455,14 @@ class BlockStyleBaseTest extends UnitTestCase {
    *
    * @dataProvider includeOnlyProvider
    */
-  public function testIncludeOnly($plugin, $bundle, $expected) {
-    // Stub the blockPlugin.
-    $this->setProtectedProperty('blockPlugin', $this->blockPlugin->reveal());
+  public function testIncludeOnly($plugin_id, $expected) {
+    $plugin_definition = [];
 
-    if ($plugin) {
-      $this->setProtectedProperty('pluginDefinition', ['include' => [$plugin]]);
+    if ($plugin_id) {
+      $plugin_definition = ['include' => [$plugin_id]];
     }
-    if ($bundle) {
-      $this->setProtectedProperty('blockContentBundle', $bundle);
-    }
-    $return = $this->plugin->includeOnly();
+
+    $return = $this->plugin->includeOnly('basic_block', $plugin_definition);
     $this->assertEquals($expected, $return);
   }
 
@@ -409,19 +471,10 @@ class BlockStyleBaseTest extends UnitTestCase {
    */
   public function includeOnlyProvider() {
     return [
-      'No include options are passed' => [NULL, NULL, TRUE],
-      'Include basic_block' => ['basic_block', NULL, TRUE],
-      'Include only a sample_block' => ['wrong_block', NULL, FALSE],
-      'Include a custom content block' => [
-        'custom_block',
-        'custom_block',
-        TRUE,
-      ],
-      'Include a custom content block which is not the current one' => [
-        'wrong_custom_block',
-        'custom_block',
-        FALSE,
-      ],
+      'No include options are passed' => [NULL, TRUE],
+      'Include basic_block' => ['basic_block', TRUE],
+      'Include only a sample_block' => ['wrong_block', FALSE],
+      'Include all derivatives of a base_plugin_id' => ['basic_block:*', TRUE],
     ];
   }
 

@@ -2,6 +2,7 @@
 
 namespace Drupal\block_style_plugins\Plugin;
 
+use Drupal\block_style_plugins\IncludeExcludeStyleTrait;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -15,6 +16,8 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
  * Base class for Block style plugins.
  */
 abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface, ContainerFactoryPluginInterface {
+
+  use IncludeExcludeStyleTrait;
 
   /**
    * Plugin ID for the Block being configured.
@@ -50,16 +53,6 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
-
-  /**
-   * Style settings for the block styles.
-   *
-   * @var array
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use $configuration.
-   */
-  protected $styles;
 
   /**
    * Construct method for BlockStyleBase.
@@ -101,8 +94,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    // TODO: replace deprecated formElements() with an empty array before 8.x-2.x.
-    return $this->formElements($form, $form_state);
+    return [];
   }
 
   /**
@@ -115,6 +107,13 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    // Set configuration if this is the Layout Builder.
+    if (isset($form['#form_id']) && $form['#form_id'] == 'block_style_plugins_layout_builder_configure_styles') {
+      $values = $form_state->getValues();
+      if ($values) {
+        $this->setConfiguration($values);
+      }
+    }
   }
 
   /**
@@ -129,9 +128,15 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
     $this->blockPlugin = $entity->getPlugin();
     $this->setBlockContentBundle();
 
+    // Find the plugin ID or block content bundle id.
+    $plugin_id = $this->blockPlugin->getPluginId();
+    if ($this->blockContentBundle) {
+      $plugin_id = $this->blockContentBundle;
+    }
+
     // Check to see if this should only apply to includes or if it has been
     // excluded.
-    if ($this->includeOnly() && !$this->exclude()) {
+    if ($this->allowStyles($plugin_id, $this->pluginDefinition)) {
 
       // Create a fieldset to contain style fields.
       if (!isset($form['block_styles'])) {
@@ -173,16 +178,6 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   }
 
   /**
-   * Returns an array of field elements.
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use buildConfigurationForm().
-   */
-  public function formElements($form, FormStateInterface $form_state) {
-    return [];
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function formAlter(array $form, FormStateInterface $form_state) {
@@ -208,7 +203,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   /**
    * {@inheritdoc}
    */
-  public function submitForm($form, FormStateInterface $form_state) {
+  public function submitForm(array $form, FormStateInterface $form_state) {
     // Allow plugins to manipulate the submitForm.
     $subform_state = SubformState::createForSubform($form['third_party_settings']['block_style_plugins'][$this->pluginId], $form, $form_state);
     $this->submitConfigurationForm($form['third_party_settings']['block_style_plugins'][$this->pluginId], $subform_state);
@@ -218,11 +213,21 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function build(array $variables) {
+    // Is the Layout Builder being used?
+    $layout_builder = (empty($variables['elements']['#id'])) ? TRUE : FALSE;
+
     $styles = $this->getStylesFromVariables($variables);
 
     if ($styles) {
-      // Add all styles config to the $variables array.
-      $variables['block_styles'][$this->pluginId] = $styles;
+      // Add styles to the configuration array so that they can be accessed in a
+      // preprocess $variables['configuration']['block_styles'] or in a twig
+      // template as {{ configuration.block_styles.plugin_id.field_name }}.
+      if ($layout_builder) {
+        $variables['#configuration']['block_styles'][$this->pluginId] = $styles;
+      }
+      else {
+        $variables['configuration']['block_styles'][$this->pluginId] = $styles;
+      }
 
       // Add each style value as a class.
       foreach ($styles as $class) {
@@ -231,7 +236,14 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
           continue;
         }
 
-        $variables['attributes']['class'][] = $class;
+        // Ensure that we have a block id. If not, the Layout Builder is used.
+        if ($layout_builder) {
+          // Layout Builder needs a "#".
+          $variables['#attributes']['class'][] = $class;
+        }
+        else {
+          $variables['attributes']['class'][] = $class;
+        }
       }
     }
 
@@ -256,14 +268,10 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    * {@inheritdoc}
    */
   public function setConfiguration(array $configuration) {
-    // TODO: Replace the deprecated defaultStyles() with defaultConfiguration() before 8.x-2.x.
     $this->configuration = NestedArray::mergeDeep(
-      $this->defaultStyles(),
+      $this->defaultConfiguration(),
       $configuration
     );
-    // Set the deprecated $styles property.
-    // TODO: Remove the deprecated $styles setting before 8.x-2.x.
-    $this->styles = $this->configuration;
   }
 
   /**
@@ -271,74 +279,6 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    */
   public function calculateDependencies() {
     return [];
-  }
-
-  /**
-   * Gets default style configuration for this plugin.
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use defaultConfiguration().
-   */
-  public function defaultStyles() {
-    return $this->defaultConfiguration();
-  }
-
-  /**
-   * Gets this plugin's style configuration.
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use getConfiguration().
-   */
-  public function getStyles() {
-    @trigger_error('::getStyles() is deprecated in 8.x-1.3 and will be removed before 8.x-2.x. Instead, you should just use getConfiguration(). See https://www.drupal.org/project/block_style_plugins/issues/3016288.', E_USER_DEPRECATED);
-    return $this->getConfiguration();
-  }
-
-  /**
-   * Sets the style configuration for this plugin instance.
-   *
-   * @deprecated in 8.x-1.3 and will be removed before 8.x-2.x.
-   *   Instead, you should just use setConfiguration().
-   */
-  public function setStyles(array $styles) {
-    @trigger_error('::setStyles() is deprecated in 8.x-1.3 and will be removed before 8.x-2.x. Instead, you should just use setConfiguration(). See https://www.drupal.org/project/block_style_plugins/issues/3016288.', E_USER_DEPRECATED);
-    $this->setConfiguration($styles);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function exclude() {
-    $list = [];
-
-    if (isset($this->pluginDefinition['exclude'])) {
-      $list = $this->pluginDefinition['exclude'];
-    }
-
-    $block_plugin_id = $this->blockPlugin->getPluginId();
-
-    if (!empty($list) && (in_array($block_plugin_id, $list) || in_array($this->blockContentBundle, $list))) {
-      return TRUE;
-    }
-    return FALSE;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function includeOnly() {
-    $list = [];
-
-    if (isset($this->pluginDefinition['include'])) {
-      $list = $this->pluginDefinition['include'];
-    }
-
-    $block_plugin_id = $this->blockPlugin->getPluginId();
-
-    if (empty($list) || (in_array($block_plugin_id, $list) || in_array($this->blockContentBundle, $list))) {
-      return TRUE;
-    }
-    return FALSE;
   }
 
   /**
@@ -374,23 +314,28 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
    *   Return the styles array or FALSE
    */
   protected function getStylesFromVariables(array $variables) {
-    // Ensure that we have a block id.
+    // Ensure that we have a block id. If not, then the Layout Builder is used.
     if (empty($variables['elements']['#id'])) {
-      return FALSE;
-    }
+      $styles = $this->getConfiguration();
 
-    // Load the block config entity.
-    /** @var \Drupal\block\Entity\Block $block */
-    $block = $this->entityTypeManager->getStorage('block')->load($variables['elements']['#id']);
-    $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
-
-    if ($styles) {
-      $this->setConfiguration($styles);
-      return $styles;
+      // Style config might not be set if this is happening in a hook so we will
+      // check if a block_styles variable is set and get the config.
+      if (empty($styles) && isset($variables['elements']['#configuration']['block_styles'][$this->pluginId])) {
+        $this->setConfiguration($variables['elements']['#configuration']['block_styles'][$this->pluginId]);
+        $styles = $styles = $this->getConfiguration();
+      }
     }
     else {
-      return FALSE;
+      // Load the block config entity.
+      /** @var \Drupal\block\Entity\Block $block */
+      $block = $this->entityTypeManager->getStorage('block')
+        ->load($variables['elements']['#id']);
+      $styles = $block->getThirdPartySetting('block_style_plugins', $this->pluginId);
+      if ($styles) {
+        $this->setConfiguration($styles);
+      }
     }
+    return $styles;
   }
 
 }
