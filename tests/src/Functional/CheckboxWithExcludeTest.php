@@ -61,7 +61,7 @@ class CheckboxWithExcludeTest extends BrowserTestBase {
 
     // Go to the block instance configuration page.
     $this->drupalGet('admin/structure/block/manage/poweredbytest');
-    $assert->statusCodeEquals(200);
+    $assert->pageTextContains('Block Styles');
 
     // Check that the style options are NOT available.
     $assert->pageTextNotContains('Check this box');
@@ -79,7 +79,6 @@ class CheckboxWithExcludeTest extends BrowserTestBase {
 
     // Go to the block instance configuration page.
     $this->drupalGet('admin/structure/block/manage/breadcrumbtest');
-    $assert->statusCodeEquals(200);
 
     // Check that the style options are available.
     $assert->responseContains('Check this box');
@@ -92,7 +91,6 @@ class CheckboxWithExcludeTest extends BrowserTestBase {
 
     // Go to the home page.
     $this->drupalGet('<front>');
-    $assert->statusCodeEquals(200);
 
     // Assert that the block was placed and has the custom class.
     $assert->responseContains('id="block-breadcrumbtest"');

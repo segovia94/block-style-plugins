@@ -60,7 +60,6 @@ class SimpleClassTest extends BrowserTestBase {
 
     // Go to the home page.
     $this->drupalGet('<front>');
-    $assert->statusCodeEquals(200);
 
     // Assert that the block was placed and has the custom class.
     $assert->linkExists('Drupal');
