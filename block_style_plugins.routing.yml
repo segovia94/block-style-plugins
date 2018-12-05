@@ -3,6 +3,7 @@ block_style_plugins.layout_builder.styles:
   defaults:
     _form: '\Drupal\block_style_plugins\Form\BlockStyleForm'
   requirements:
+    _module_dependencies: 'layout_builder'
     _permission: 'configure any layout'
   options:
     _admin_route: TRUE
@@ -15,6 +16,7 @@ block_style_plugins.layout_builder.add_styles:
   defaults:
     _form: '\Drupal\block_style_plugins\Form\ConfigureStyles'
   requirements:
+    _module_dependencies: 'layout_builder'
     _permission: 'configure any layout'
   options:
     _admin_route: TRUE
@@ -27,6 +29,7 @@ block_style_plugins.layout_builder.delete_styles:
   defaults:
     _form: '\Drupal\block_style_plugins\Form\DeleteStyles'
   requirements:
+    _module_dependencies: 'layout_builder'
     _permission: 'configure any layout'
   options:
     _admin_route: TRUE

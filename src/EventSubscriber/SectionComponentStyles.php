@@ -33,7 +33,13 @@ class SectionComponentStyles implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    $events[LayoutBuilderEvents::SECTION_COMPONENT_BUILD_RENDER_ARRAY] = 'onBuildRender';
+    $events = [];
+
+    // Skip this if the Layout Builder is not installed.
+    if (class_exists('\Drupal\layout_builder\LayoutBuilderEvents')) {
+      $events[LayoutBuilderEvents::SECTION_COMPONENT_BUILD_RENDER_ARRAY] = 'onBuildRender';
+    }
+
     return $events;
   }
 
