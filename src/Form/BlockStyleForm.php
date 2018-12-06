@@ -185,7 +185,7 @@ class BlockStyleForm extends FormBase {
         '#theme' => 'item_list',
         '#items' => $items,
         '#empty' => $this->t('No styles have been set.'),
-        '#attached' => ['library' => ['block_style_plugins/off_canvas']]
+        '#attached' => ['library' => ['block_style_plugins/off_canvas']],
       ];
     }
 

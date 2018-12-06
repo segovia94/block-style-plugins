@@ -94,9 +94,7 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $block_element = $assert->waitForElementVisible('css', $block_css_locator);
     $block_element->hasClass('test-class');
 
-    // Edit the Style.
-
-    // Click the contextual link to edit.
+    // Edit the style.
     $this->clickContextualLink($block_css_locator, 'Style settings');
     $assert->assertWaitOnAjaxRequest();
 
@@ -113,7 +111,6 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $block_element->hasClass('edited-class');
 
     // Delete the style.
-
     $this->drupalGet('node/1/layout');
     $this->clickContextualLink($block_css_locator, 'Style settings');
     $assert->assertWaitOnAjaxRequest();

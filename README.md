@@ -5,8 +5,8 @@ options to block configuration by creating a custom plugin. It is advisable to
 do this primarily in themes since the majority of styles should be specific to a
 theme.
 
-The new core Layout Builder is supported and will offer a new contextual link for
-"Style settings". This way your styles will work for blocks regardless as to
+The new core Layout Builder is supported and will offer a new contextual link
+for "Style settings". This way your styles will work for blocks regardless as to
 whether you place them via the new Layout Builder or the traditional Blocks UI.
 
 **Tutorial Video:** [https://youtu.be/Y0t8owlV2_4](https://youtu.be/Y0t8owlV2_4) 
