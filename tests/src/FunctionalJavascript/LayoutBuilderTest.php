@@ -75,11 +75,7 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $assert->pageTextContains('The node body');
 
     // Add a new block.
-    $this->clickLink('Add Block');
-    $assert->assertWaitOnAjaxRequest();
-    $this->clickLink('Powered by Drupal');
-    $assert->assertWaitOnAjaxRequest();
-    $page->pressButton('Add Block');
+    $this->addNewBlock('Powered by Drupal');
 
     // Click the contextual link.
     $this->clickContextualLink($block_css_locator, 'Style settings');
@@ -150,11 +146,7 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $this->drupalGet('node/1/layout');
 
     // Add a new block.
-    $this->clickLink('Add Block');
-    $assert->assertWaitOnAjaxRequest();
-    $this->clickLink('Powered by Drupal');
-    $assert->assertWaitOnAjaxRequest();
-    $page->pressButton('Add Block');
+    $this->addNewBlock('Powered by Drupal');
 
     // Click the contextual link.
     $this->clickContextualLink($block_css_locator, 'Style settings');
@@ -180,11 +172,7 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $this->drupalGet('node/1/layout');
 
     // Add a new block.
-    $this->clickLink('Add Block');
-    $assert->assertWaitOnAjaxRequest();
-    $this->clickLink('Custom Block Test');
-    $assert->assertWaitOnAjaxRequest();
-    $page->pressButton('Add Block');
+    $this->addNewBlock('Custom Block Test');
 
     // Click the contextual link.
     $this->clickContextualLink($block_css_locator, 'Style settings');
@@ -208,11 +196,7 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $this->drupalGet('node/1/layout');
 
     // Add a new block.
-    $this->clickLink('Add Block');
-    $assert->assertWaitOnAjaxRequest();
-    $this->clickLink('Powered by Drupal');
-    $assert->assertWaitOnAjaxRequest();
-    $page->pressButton('Add Block');
+    $this->addNewBlock('Powered by Drupal');
 
     // Click the contextual link.
     $this->clickContextualLink($block_css_locator, 'Style settings');
@@ -234,6 +218,24 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $this->clickLink('Save Layout');
     // Check to see if the template is still applied.
     $assert->responseContains('This is a custom template');
+  }
+
+  /**
+   * Add a block from the Off-Canvas Tray into a Section.
+   *
+   * @param string $title
+   *   The title of the Block being added.
+   */
+  protected function addNewBlock($title) {
+    $assert = $this->assertSession();
+    $page = $this->getSession()->getPage();
+
+    $this->clickLink('Add Block');
+    $assert->assertWaitOnAjaxRequest();
+    $this->clickLink($title);
+    $assert->assertWaitOnAjaxRequest();
+    $page->pressButton('Add Block');
+    $assert->assertWaitOnAjaxRequest();
   }
 
   /**
