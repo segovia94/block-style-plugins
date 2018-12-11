@@ -137,7 +137,6 @@ class LayoutBuilderTest extends WebDriverTestBase {
    */
   public function testLayoutBuilderBlockVisibility() {
     $assert = $this->assertSession();
-    $page = $this->getSession()->getPage();
     $block_css_locator = '.block-system-powered-by-block';
 
     $this->drupalGet('node/1/layout');
@@ -160,7 +159,6 @@ class LayoutBuilderTest extends WebDriverTestBase {
    */
   public function testLayoutBuilderCustomBlockVisibility() {
     $assert = $this->assertSession();
-    $page = $this->getSession()->getPage();
 
     // Create the custom block.
     $block = $this->createBlockContent('Custom Block Test');
