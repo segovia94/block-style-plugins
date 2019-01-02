@@ -111,7 +111,7 @@ class BlockStyleForm extends FormBase {
     $this->uuid = $uuid;
 
     $component = $block_styles = $section_storage->getSection($delta)->getComponent($uuid);
-    $block_styles = $component->get('block_styles');
+    $block_styles = $component->getThirdPartySetting('block_style_plugins', 'block_styles');
 
     // Get the component/block ID and then replace it with a block_content_type
     // if this is a reusable "block_content" block.

@@ -121,7 +121,7 @@ class ConfigureStyles extends FormBase {
     $this->delta = $delta;
     $this->uuid = $uuid;
 
-    $block_styles = $this->getComponent()->get('block_styles');
+    $block_styles = $this->getComponent()->getThirdPartySetting('block_style_plugins', 'block_styles');
     $stored_styles = !empty($block_styles[$plugin_id]) ? $block_styles[$plugin_id] : [];
 
     $this->blockStyles = $this->blockStyleManager->createInstance($plugin_id);
@@ -164,9 +164,9 @@ class ConfigureStyles extends FormBase {
     $plugin_id = $this->blockStyles->getPluginId();
 
     $component = $this->getComponent();
-    $block_styles = $component->get('block_styles');
+    $block_styles = $component->getThirdPartySetting('block_style_plugins', 'block_styles');
     $block_styles[$plugin_id] = $configuration;
-    $component->set('block_styles', $block_styles);
+    $component->setThirdPartySetting('block_style_plugins', 'block_styles', $block_styles);
 
     $this->layoutTempstoreRepository->set($this->sectionStorage);
     $form_state->setRedirectUrl($this->sectionStorage->getLayoutBuilderUrl());

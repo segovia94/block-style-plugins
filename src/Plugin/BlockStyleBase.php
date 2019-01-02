@@ -187,8 +187,6 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
   /**
    * Adds block style specific validation handling for the block form.
    *
-   * TODO: Add this to the BlockStyleInterface before 8.x-2.x.
-   *
    * @param array $form
    *   The form definition array for the full block configuration form.
    * @param \Drupal\Core\Form\FormStateInterface $form_state
