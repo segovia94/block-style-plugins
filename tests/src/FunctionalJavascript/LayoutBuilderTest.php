@@ -103,6 +103,7 @@ class LayoutBuilderTest extends WebDriverTestBase {
     $assert->fieldValueEquals('settings[simple_class]', 'test-class');
     $page->fillField('settings[simple_class]', 'edited-class');
     $page->pressButton('Update');
+    $assert->assertWaitOnAjaxRequest();
 
     // Save the Layout.
     $this->clickLink('Save Layout');
