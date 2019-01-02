@@ -219,15 +219,13 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
     $styles = $this->getStylesFromVariables($variables);
 
     if ($styles) {
+      // Layout Builder needs a '#'.
+      $hash = ($layout_builder) ? '#' : '';
+
       // Add styles to the configuration array so that they can be accessed in a
       // preprocess $variables['configuration']['block_styles'] or in a twig
       // template as {{ configuration.block_styles.plugin_id.field_name }}.
-      if ($layout_builder) {
-        $variables['#configuration']['block_styles'][$this->pluginId] = $styles;
-      }
-      else {
-        $variables['configuration']['block_styles'][$this->pluginId] = $styles;
-      }
+      $variables[$hash . 'configuration']['block_styles'][$this->pluginId] = $styles;
 
       // Add each style value as a class.
       foreach ($styles as $class) {
@@ -237,13 +235,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
         }
 
         // Ensure that we have a block id. If not, the Layout Builder is used.
-        if ($layout_builder) {
-          // Layout Builder needs a "#".
-          $variables['#attributes']['class'][] = $class;
-        }
-        else {
-          $variables['attributes']['class'][] = $class;
-        }
+        $variables[$hash . 'attributes']['class'][] = $class;
       }
     }
 
