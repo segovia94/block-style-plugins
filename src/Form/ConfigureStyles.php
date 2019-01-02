@@ -121,7 +121,7 @@ class ConfigureStyles extends FormBase {
     $this->delta = $delta;
     $this->uuid = $uuid;
 
-    $block_styles = $section_storage->getSection($delta)->getComponent($uuid)->get('block_styles');
+    $block_styles = $this->getComponent()->get('block_styles');
     $stored_styles = !empty($block_styles[$plugin_id]) ? $block_styles[$plugin_id] : [];
 
     $this->blockStyles = $this->blockStyleManager->createInstance($plugin_id);
@@ -163,7 +163,7 @@ class ConfigureStyles extends FormBase {
     $configuration = $configuration = $this->blockStyles->getConfiguration();
     $plugin_id = $this->blockStyles->getPluginId();
 
-    $component = $this->sectionStorage->getSection($this->delta)->getComponent($this->uuid);
+    $component = $this->getComponent();
     $block_styles = $component->get('block_styles');
     $block_styles[$plugin_id] = $configuration;
     $component->set('block_styles', $block_styles);
@@ -193,6 +193,16 @@ class ConfigureStyles extends FormBase {
       return $this->pluginFormFactory->createInstance($blockStyles, 'configure');
     }
     return $blockStyles;
+  }
+
+  /**
+   * Get the Section Component.
+   *
+   * @return \Drupal\layout_builder\SectionComponent
+   *   The current Section Component.
+   */
+  public function getComponent() {
+    return $this->sectionStorage->getSection($this->delta)->getComponent($this->uuid);
   }
 
 }
