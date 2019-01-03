@@ -50,8 +50,7 @@ class SectionComponentStyles implements EventSubscriberInterface {
    *   The section component build render array event.
    */
   public function onBuildRender(SectionComponentBuildRenderArrayEvent $event) {
-    $block_styles = $event->getComponent()->getThirdPartySetting('block_style_plugins', 'block_styles');
-    $block_styles = $block_styles ? $block_styles : [];
+    $block_styles = $event->getComponent()->getThirdPartySettings('block_style_plugins');
 
     if ($block_styles) {
       $build = $event->getBuild();

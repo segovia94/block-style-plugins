@@ -125,9 +125,7 @@ class DeleteStyles extends ConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $component = $this->sectionStorage->getSection($this->delta)->getComponent($this->uuid);
-    $block_styles = $component->getThirdPartySetting('block_style_plugins', 'block_styles');
-    unset($block_styles[$this->pluginId]);
-    $component->setThirdPartySetting('block_style_plugins', 'block_styles', $block_styles);
+    $component->unsetThirdPartySetting('block_style_plugins', $this->pluginId);
 
     $this->layoutTempstoreRepository->set($this->sectionStorage);
     $form_state->setRedirectUrl($this->sectionStorage->getLayoutBuilderUrl());

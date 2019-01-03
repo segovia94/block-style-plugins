@@ -126,7 +126,7 @@ class BlockStyleBaseTest extends UnitTestCase {
   public function testPrepareForm() {
     $block = $this->prophesize(Block::CLASS);
     $block->getPlugin()->willReturn($this->blockPlugin->reveal());
-    $block->getThirdPartySetting('block_style_plugins', 'block_style_plugins')
+    $block->getThirdPartySetting('block_style_plugins', 'block_style_plugins', [])
       ->willReturn(['test_style' => TRUE]);
 
     $blockForm = $this->prophesize(BlockForm::CLASS);

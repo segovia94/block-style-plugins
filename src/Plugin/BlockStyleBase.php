@@ -149,8 +149,7 @@ abstract class BlockStyleBase extends PluginBase implements BlockStyleInterface,
         ];
       }
 
-      $styles = $entity->getThirdPartySetting('block_style_plugins', $this->pluginId);
-      $styles = is_array($styles) ? $styles : [];
+      $styles = $entity->getThirdPartySetting('block_style_plugins', $this->pluginId, []);
       $this->setConfiguration($styles);
 
       // Create containers to place each plugin style settings into the styles

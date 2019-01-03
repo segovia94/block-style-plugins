@@ -121,11 +121,10 @@ class ConfigureStyles extends FormBase {
     $this->delta = $delta;
     $this->uuid = $uuid;
 
-    $block_styles = $this->getComponent()->getThirdPartySetting('block_style_plugins', 'block_styles');
-    $stored_styles = !empty($block_styles[$plugin_id]) ? $block_styles[$plugin_id] : [];
+    $block_styles = $this->getComponent()->getThirdPartySetting('block_style_plugins', $plugin_id, []);
 
     $this->blockStyles = $this->blockStyleManager->createInstance($plugin_id);
-    $this->blockStyles->setConfiguration($stored_styles);
+    $this->blockStyles->setConfiguration($block_styles);
 
     $form['#tree'] = TRUE;
     $form['settings'] = [];
@@ -134,7 +133,7 @@ class ConfigureStyles extends FormBase {
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $stored_styles ? $this->t('Update') : $this->t('Add Styles'),
+      '#value' => $block_styles ? $this->t('Update') : $this->t('Add Styles'),
       '#button_type' => 'primary',
     ];
 
@@ -164,9 +163,7 @@ class ConfigureStyles extends FormBase {
     $plugin_id = $this->blockStyles->getPluginId();
 
     $component = $this->getComponent();
-    $block_styles = $component->getThirdPartySetting('block_style_plugins', 'block_styles');
-    $block_styles[$plugin_id] = $configuration;
-    $component->setThirdPartySetting('block_style_plugins', 'block_styles', $block_styles);
+    $component->setThirdPartySetting('block_style_plugins', $plugin_id, $configuration);
 
     $this->layoutTempstoreRepository->set($this->sectionStorage);
     $form_state->setRedirectUrl($this->sectionStorage->getLayoutBuilderUrl());
