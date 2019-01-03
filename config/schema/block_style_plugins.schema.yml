@@ -9,3 +9,9 @@ block.block.*.third_party.block_style_plugins:
   label: 'Block Style Plugins third party settings'
   sequence:
     type: block.settings.block_style_plugins
+
+layout_builder.component.third_party.block_style_plugins:
+  type: sequence
+  label: 'Block Style Plugins third party settings'
+  sequence:
+    type: block.settings.block_style_plugins
